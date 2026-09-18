@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: divorcios_postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: divorcios_db
+      POSTGRES_USER: divorcios_user
+      POSTGRES_PASSWORD: DivorciosDev2026
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - divorcios_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U divorcios_user -d divorcios_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  divorcios_postgres_data:

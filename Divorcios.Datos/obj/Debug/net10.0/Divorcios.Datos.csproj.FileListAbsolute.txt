@@ -1,0 +1,17 @@
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\bin\Debug\net10.0\Divorcios.Datos.deps.json
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\bin\Debug\net10.0\Divorcios.Datos.dll
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\bin\Debug\net10.0\Divorcios.Datos.pdb
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\bin\Debug\net10.0\Divorcios.Dominio.dll
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\bin\Debug\net10.0\Divorcios.Dominio.pdb
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcios.Datos.csproj.AssemblyReference.cache
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcios.Datos.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcios.Datos.AssemblyInfoInputs.cache
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcios.Datos.AssemblyInfo.cs
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcios.Datos.csproj.CoreCompileInputs.cache
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcio.E1058C5E.Up2Date
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcios.Datos.dll
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\refint\Divorcios.Datos.dll
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcios.Datos.pdb
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\ref\Divorcios.Datos.dll
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\bin\Debug\net10.0\Divorcios.Datos.runtimeconfig.json
+C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Datos\obj\Debug\net10.0\Divorcios.Datos.genruntimeconfig.cache

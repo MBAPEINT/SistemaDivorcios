@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="Excepciones\" />
+    <Folder Include="Resultados\" />
+    <Folder Include="Validaciones\" />
+    <Folder Include="Servicios\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Divorcios.Datos\Divorcios.Datos.csproj" />
+    <ProjectReference Include="..\Divorcios.Dominio\Divorcios.Dominio.csproj" />
+  </ItemGroup>
+
+</Project>
