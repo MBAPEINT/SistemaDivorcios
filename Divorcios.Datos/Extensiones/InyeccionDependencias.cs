@@ -1,5 +1,7 @@
-﻿using Divorcios.Datos.Contexto;
+using Divorcios.Datos.Contexto;
 using Microsoft.EntityFrameworkCore;
+using Divorcios.Datos.Interfaces;
+using Divorcios.Datos.Repositorios;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Divorcios.Datos.Extensiones
@@ -15,6 +17,8 @@ namespace Divorcios.Datos.Extensiones
                 opciones.UseNpgsql(cadenaConexion);
                 opciones.UseSnakeCaseNamingConvention();
             });
+
+            servicios.AddScoped<ICatalogosRepositorio, CatalogosRepositorio>();
 
             return servicios;
         }

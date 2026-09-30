@@ -15,3 +15,21 @@ C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Neg
 C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\refint\Divorcios.Negocio.dll
 C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.pdb
 C:\Users\Jose\Documents\Divorcios - Municipalidad\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\ref\Divorcios.Negocio.dll
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\bin\Debug\net10.0\Divorcios.Negocio.deps.json
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\bin\Debug\net10.0\Divorcios.Negocio.dll
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\bin\Debug\net10.0\Divorcios.Negocio.pdb
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\bin\Debug\net10.0\Divorcios.Datos.dll
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\bin\Debug\net10.0\Divorcios.Dominio.dll
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\bin\Debug\net10.0\Divorcios.Datos.pdb
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\bin\Debug\net10.0\Divorcios.Dominio.pdb
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.csproj.AssemblyReference.cache
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.AssemblyInfoInputs.cache
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.AssemblyInfo.cs
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.csproj.CoreCompileInputs.cache
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.sourcelink.json
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcio.10271264.Up2Date
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.dll
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\refint\Divorcios.Negocio.dll
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\Divorcios.Negocio.pdb
+C:\Users\Jose\Documents\Municipalidad\Backend\SistemaDivorcios\Divorcios.Negocio\obj\Debug\net10.0\ref\Divorcios.Negocio.dll

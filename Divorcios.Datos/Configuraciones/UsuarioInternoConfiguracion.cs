@@ -31,6 +31,7 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.Property(x => x.UsuarioInternoId)
                 .UseIdentityAlwaysColumn();
+            builder.Property(x => x.UltimoAccesoEn);
 
             builder.Property(x => x.Login)
                 .HasMaxLength(80)

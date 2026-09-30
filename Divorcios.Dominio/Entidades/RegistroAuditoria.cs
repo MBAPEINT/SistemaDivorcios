@@ -10,7 +10,7 @@ namespace Divorcios.Dominio.Entidades
         public string ActorTipoCodigo { get; set; } = null!;
         public long? UsuarioInternoId { get; set; }
         public long? CuentaCiudadanaId { get; set; }
-        public long? CasoId { get; set; }
+        public long? ExpedienteId { get; set; }
         public string AccionCodigo { get; set; } = null!;
         public string RecursoCodigo { get; set; } = null!;
         public string? RecursoId { get; set; }
@@ -23,6 +23,6 @@ namespace Divorcios.Dominio.Entidades
         public DateTime RegistradoEn { get; set; } = DateTime.UtcNow;
         public UsuarioInterno? UsuarioInterno { get; set; }
         public CuentaCiudadana? CuentaCiudadana { get; set; }
-        public Caso? Caso { get; set; }
+        public Expediente? Expediente { get; set; }
     }
 }

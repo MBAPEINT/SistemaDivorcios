@@ -13,16 +13,15 @@ namespace Divorcios.Dominio.Entidades
         public string RolCodigo { get; set; } = null!;
         public bool Activo { get; set; } = true;
         public DateTime CreadoEn { get; set; } = DateTime.UtcNow;
+        public DateTime? UltimoAccesoEn { get; set; }
         public ICollection<DocumentoVersion> VersionesDocumentoCargadas { get; set; }
             = new List<DocumentoVersion>();
         public ICollection<RevisionPreregistro> RevisionesPrerregistro { get; set; }
             = new List<RevisionPreregistro>();
-        public ICollection<Expediente> ExpedientesRegistrados { get; set; }
-            = new List<Expediente>();
-        public ICollection<HistorialEstadoCaso> EstadosCasoRegistrados { get; set; }
-            = new List<HistorialEstadoCaso>();
-        public ICollection<PlazoCaso> PlazosCreados { get; set; }
-            = new List<PlazoCaso>();
+        public ICollection<HistorialEstadoExpediente> EstadosExpedienteRegistrados { get; set; }
+            = new List<HistorialEstadoExpediente>();
+        public ICollection<PlazoExpediente> PlazosCreados { get; set; }
+            = new List<PlazoExpediente>();
         public ICollection<AudienciaRatificacion> AudienciasCreadas { get; set; }
             = new List<AudienciaRatificacion>();
         public ICollection<SolicitudDisolucion> SolicitudesDisolucionRegistradas { get; set; }
@@ -35,8 +34,8 @@ namespace Divorcios.Dominio.Entidades
             = new List<ActuacionAdministrativa>();
         public ICollection<Oficio> OficiosRegistrados { get; set; }
             = new List<Oficio>();
-        public ICollection<PagoTramite> PagosRegistrados { get; set; }
-            = new List<PagoTramite>();
+        public ICollection<Pago> PagosRegistrados { get; set; }
+            = new List<Pago>();
         public ICollection<Notificacion> NotificacionesCreadas { get; set; }
             = new List<Notificacion>();
         public ICollection<IntentoNotificacion> IntentosNotificacionEjecutados { get; set; }
@@ -45,5 +44,11 @@ namespace Divorcios.Dominio.Entidades
             = new List<DiaNoLaborable>();
         public ICollection<RegistroAuditoria> RegistrosAuditoria { get; set; }
             = new List<RegistroAuditoria>();
+        public ICollection<ExpedienteVersion> VersionesExpedienteRegistradas { get; set; } 
+            = new List<ExpedienteVersion>();
+        public ICollection<ExpedienteContactoHistorial> ContactosExpedienteRegistrados { get; set; }
+            = new List<ExpedienteContactoHistorial>();
+        public ICollection<Documento> DocumentosCreados { get; set; }
+            = new List<Documento>();
     }
 }

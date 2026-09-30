@@ -134,7 +134,7 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.HasIndex(x => new
             {
-                x.CasoId,
+                x.ExpedienteId,
                 x.CreadaEn
             });
 
@@ -144,9 +144,9 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.HasIndex(x => x.TipoCodigo);
 
-            builder.HasOne(x => x.Caso)
+            builder.HasOne(x => x.Expediente)
                 .WithMany(x => x.Notificaciones)
-                .HasForeignKey(x => x.CasoId)
+                .HasForeignKey(x => x.ExpedienteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.PersonaDestinataria)

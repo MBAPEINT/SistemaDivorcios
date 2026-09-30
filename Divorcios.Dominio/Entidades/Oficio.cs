@@ -9,7 +9,7 @@ namespace Divorcios.Dominio.Entidades
         public long OficioId { get; set; }
         public long ActuacionAdministrativaId { get; set; }
         public short DestinoOficioId { get; set; }
-        public long DocumentoOficioId { get; set; }
+        public long? DocumentoOficioId { get; set; }
         public string EstadoCodigo { get; set; } = "BORRADOR";
         public string? NumeroOficio { get; set; }
         public DateOnly? FechaEmision { get; set; }
@@ -21,7 +21,7 @@ namespace Divorcios.Dominio.Entidades
         public ActuacionAdministrativa ActuacionAdministrativa { get; set; }
             = null!;
         public DestinoOficio DestinoOficio { get; set; } = null!;
-        public Documento DocumentoOficio { get; set; } = null!;
+        public Documento? DocumentoOficio { get; set; } = null!;
         public UsuarioInterno RegistradoPorUsuario { get; set; } = null!;
     }
 }

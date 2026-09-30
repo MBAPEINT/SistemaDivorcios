@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yimZJEUrPVY=",
+  "dgSpecHash": "a5dWbUFbnAM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj",
+  "projectFilePath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Jose\\.nuget\\packages\\efcore.namingconventions\\10.0.1\\efcore.namingconventions.10.0.1.nupkg.sha512",
     "C:\\Users\\Jose\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

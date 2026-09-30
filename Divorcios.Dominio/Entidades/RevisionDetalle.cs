@@ -15,5 +15,7 @@ namespace Divorcios.Dominio.Entidades
             = null!;
         public PreregistroRequisito PreregistroRequisito { get; set; }
             = null!;
+        public ICollection<RevisionDetalleDocumento> DocumentosEvaluados { get; set; }
+            = new List<RevisionDetalleDocumento>();
     }
 }

@@ -19,18 +19,26 @@ namespace Divorcios.Datos.Configuraciones
                         "ck_actuacion_tipo",
                         """
                         tipo_codigo IN (
-                            'ADMISIBILIDAD',
-                            'SEPARACION_CONVENCIONAL',
-                            'DISOLUCION_VINCULO'
+                            'INFORME_ADMISIBILIDAD',
+                            'RESOLUCION_ADMISIBILIDAD',
+                            'INFORME_SEPARACION',
+                            'RESOLUCION_SEPARACION',
+                            'INFORME_DISOLUCION',
+                            'RESOLUCION_DISOLUCION'
                         )
                         """);
+
+                    tabla.HasCheckConstraint(
+                        "ck_actuacion_secuencia",
+                        "numero_secuencia > 0");
 
                     tabla.HasCheckConstraint(
                         "ck_actuacion_estado",
                         """
                         estado_codigo IN (
                             'BORRADOR',
-                            'EMITIDA'
+                            'EMITIDA',
+                            'ANULADA'
                         )
                         """);
 
@@ -42,11 +50,10 @@ namespace Divorcios.Datos.Configuraciones
                         """);
 
                     tabla.HasCheckConstraint(
-                        "ck_actuacion_datos_emision",
+                        "ck_actuacion_emision",
                         """
                         (
                             estado_codigo = 'BORRADOR'
-                            AND numero_resolucion IS NULL
                             AND fecha_emision IS NULL
                             AND emitida_por_usuario_id IS NULL
                             AND emitida_en IS NULL
@@ -54,19 +61,28 @@ namespace Divorcios.Datos.Configuraciones
                         OR
                         (
                             estado_codigo = 'EMITIDA'
-                            AND numero_resolucion IS NOT NULL
-                            AND btrim(numero_resolucion) <> ''
                             AND fecha_emision IS NOT NULL
                             AND emitida_por_usuario_id IS NOT NULL
                             AND emitida_en IS NOT NULL
                         )
+                        OR estado_codigo = 'ANULADA'
                         """);
 
                     tabla.HasCheckConstraint(
-                        "ck_actuacion_fecha_registro_emision",
+                        "ck_actuacion_fecha_emision",
                         """
                         emitida_en IS NULL
                         OR emitida_en >= creada_en
+                        """);
+
+                    tabla.HasCheckConstraint(
+                        "ck_actuacion_fecha_notificacion",
+                        """
+                        fecha_notificacion IS NULL
+                        OR (
+                            fecha_emision IS NOT NULL
+                            AND fecha_notificacion >= fecha_emision
+                        )
                         """);
 
                     tabla.HasCheckConstraint(
@@ -83,7 +99,10 @@ namespace Divorcios.Datos.Configuraciones
                 .UseIdentityAlwaysColumn();
 
             builder.Property(x => x.TipoCodigo)
-                .HasMaxLength(35)
+                .HasMaxLength(40)
+                .IsRequired();
+
+            builder.Property(x => x.NumeroSecuencia)
                 .IsRequired();
 
             builder.Property(x => x.EstadoCodigo)
@@ -97,6 +116,9 @@ namespace Divorcios.Datos.Configuraciones
             builder.Property(x => x.FechaEmision)
                 .HasColumnType("date");
 
+            builder.Property(x => x.FechaNotificacion)
+                .HasColumnType("date");
+
             builder.Property(x => x.CreadaEn)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .IsRequired();
@@ -108,26 +130,30 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.HasIndex(x => new
             {
-                x.CasoId,
-                x.TipoCodigo
+                x.ExpedienteId,
+                x.TipoCodigo,
+                x.NumeroSecuencia
             })
                 .IsUnique();
 
-            builder.HasIndex(x => new
-            {
-                x.NumeroResolucion,
-                x.FechaEmision
-            });
+            builder.HasIndex(x => x.DocumentoId)
+                .IsUnique();
+
+            builder.HasIndex(x => x.NumeroResolucion);
 
             builder.HasIndex(x => x.CreadaPorUsuarioId);
-
             builder.HasIndex(x => x.EmitidaPorUsuarioId);
-
             builder.HasIndex(x => x.EstadoCodigo);
 
-            builder.HasOne(x => x.Caso)
+            builder.HasOne(x => x.Expediente)
                 .WithMany(x => x.ActuacionesAdministrativas)
-                .HasForeignKey(x => x.CasoId)
+                .HasForeignKey(x => x.ExpedienteId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Documento)
+                .WithOne(x => x.ActuacionAdministrativa)
+                .HasForeignKey<ActuacionAdministrativa>(
+                    x => x.DocumentoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.CreadaPorUsuario)

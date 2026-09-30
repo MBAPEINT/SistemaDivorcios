@@ -28,6 +28,24 @@ namespace Divorcios.Datos.Configuraciones
                             'CIERRE'
                         )
                         """);
+                    tabla.HasCheckConstraint(
+                        "ck_documento_estado",
+                        """
+                        estado_codigo IN (
+                            'VIGENTE',
+                            'REEMPLAZADO',
+                            'ANULADO'
+                        )
+                        """);
+
+                    tabla.HasCheckConstraint(
+                        "ck_documento_creador",
+                        """
+                        NOT (
+                            creado_por_cuenta_id IS NOT NULL
+                            AND creado_por_usuario_id IS NOT NULL
+                        )
+                        """);
                 });
 
             builder.HasKey(x => x.DocumentoId);
@@ -47,9 +65,14 @@ namespace Divorcios.Datos.Configuraciones
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .IsRequired();
 
+            builder.Property(x => x.EstadoCodigo)
+                .HasMaxLength(20)
+                .HasDefaultValue("VIGENTE")
+                .IsRequired();
+
             builder.HasIndex(x => new
             {
-                x.CasoId,
+                x.ExpedienteId,
                 x.EtapaCodigo
             });
 
@@ -57,11 +80,15 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.HasIndex(x => x.PreregistroRequisitoId);
 
-            builder.HasIndex(x => x.ActuacionAdministrativaId);
+            builder.HasIndex(x => x.CreadoPorCuentaId);
 
-            builder.HasOne(x => x.Caso)
+            builder.HasIndex(x => x.CreadoPorUsuarioId);
+
+            builder.HasIndex(x => x.EstadoCodigo);
+
+            builder.HasOne(x => x.Expediente)
                 .WithMany(x => x.Documentos)
-                .HasForeignKey(x => x.CasoId)
+                .HasForeignKey(x => x.ExpedienteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.TipoDocumento)
@@ -74,9 +101,14 @@ namespace Divorcios.Datos.Configuraciones
                 .HasForeignKey(x => x.PreregistroRequisitoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.ActuacionAdministrativa)
-                .WithMany(x => x.Documentos)
-                .HasForeignKey(x => x.ActuacionAdministrativaId)
+            builder.HasOne(x => x.CreadoPorCuenta)
+                .WithMany(x => x.DocumentosCreados)
+                .HasForeignKey(x => x.CreadoPorCuentaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.CreadoPorUsuario)
+                .WithMany(x => x.DocumentosCreados)
+                .HasForeignKey(x => x.CreadoPorUsuarioId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

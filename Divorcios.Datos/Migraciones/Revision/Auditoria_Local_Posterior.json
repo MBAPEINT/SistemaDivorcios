@@ -1,0 +1,276 @@
+[
+  {
+    "base": "divorcios_db",
+    "version_postgresql": "17.11",
+    "solo_lectura": "on",
+    "historial_migraciones_presente": true,
+    "tablas": [
+      {
+        "esquema": "divorcios",
+        "tabla": "actuacion_administrativa",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "asistencia_audiencia",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "audiencia_ratificacion",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "consulta_reniec",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "cuenta_ciudadana",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "destino_oficio",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "dia_no_laborable",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "documento",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "documento_version",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "estado_expediente",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "expediente",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "expediente_contacto_historial",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "expediente_conyuge",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "expediente_version",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "historial_estado_expediente",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "intento_notificacion",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "notificacion",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "oficio",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "pago",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "persona",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "plazo_expediente",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "preregistro",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "preregistro_requisito",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "preregistro_requisito_documento",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "preregistro_version",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "registro_auditoria",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "regla_plazo",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "representacion",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "requisito_catalogo",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "revision_detalle",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "revision_detalle_documento",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "revision_preregistro",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "solicitante_disolucion",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "solicitud_disolucion",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "tipo_documento",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "usuario_interno",
+        "registros": 0
+      },
+      {
+        "esquema": "divorcios",
+        "tabla": "validacion_identidad",
+        "registros": 0
+      },
+      {
+        "esquema": "public",
+        "tabla": "__EFMigrationsHistory",
+        "registros": 18
+      }
+    ]
+  },
+  {
+    "migraciones": [
+      {
+        "migration_id": "20260917220610_InicialIdentidadCaso",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917224116_AgregarCatalogosBase",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917224634_AgregarCacheReniec",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917231311_AgregarPrerregistroDocumentos",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917232101_AgregarRevisionesPrerregistro",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917232641_AgregarRepresentacion",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917233019_AgregarExpediente",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917233806_AgregarHistorialEstadosCaso",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917235017_AgregarPlazosCaso",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260917235902_AgregarAudienciasRatificacion",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260918001512_AgregarSolicitudDisolucion",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260918003114_AgregarActuacionesAdministrativas",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260918003621_AgregarOficios",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260918004120_AgregarPagosTramite",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260918004633_AgregarNotificaciones",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260918005010_AgregarDiasNoLaborables",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260918005514_AgregarRegistroAuditoria",
+        "product_version": "10.0.12"
+      },
+      {
+        "migration_id": "20260930155844_CerrarModeloExpedientesYRespuestasVersionadas",
+        "product_version": "10.0.12"
+      }
+    ]
+  }
+]

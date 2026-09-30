@@ -42,18 +42,26 @@ namespace Divorcios.Datos.Configuraciones
                 .HasDefaultValue("PENDIENTE")
                 .IsRequired();
 
+            builder.Property(x => x.Aplica)
+                .HasDefaultValue(true)
+                .IsRequired();
+
+            builder.Property(x => x.GeneradoEn)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .IsRequired();
+
             builder.HasIndex(x => new
             {
-                x.PreregistroId,
+                x.PreregistroVersionId,
                 x.RequisitoCatalogoId
             })
                 .IsUnique();
 
             builder.HasIndex(x => x.RequisitoCatalogoId);
 
-            builder.HasOne(x => x.Preregistro)
+            builder.HasOne(x => x.PreregistroVersion)
                 .WithMany(x => x.Requisitos)
-                .HasForeignKey(x => x.PreregistroId)
+                .HasForeignKey(x => x.PreregistroVersionId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.RequisitoCatalogo)

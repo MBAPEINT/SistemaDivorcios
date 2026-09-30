@@ -7,7 +7,7 @@ namespace Divorcios.Dominio.Entidades
     public class SolicitudDisolucion
     {
         public long SolicitudDisolucionId { get; set; }
-        public long CasoId { get; set; }
+        public long ExpedienteId { get; set; }
         public long DocumentoSolicitudId { get; set; }
         public DateOnly FechaPresentacionMesaPartes { get; set; }
         public string EstadoCodigo { get; set; } = "PRESENTADA";
@@ -16,7 +16,7 @@ namespace Divorcios.Dominio.Entidades
         public long? ValidadaPorUsuarioId { get; set; }
         public DateTime? ValidadaEn { get; set; }
         public string? Observacion { get; set; }
-        public Caso Caso { get; set; } = null!;
+        public Expediente Expediente { get; set; } = null!;
         public Documento DocumentoSolicitud { get; set; } = null!;
         public UsuarioInterno RegistradaPorUsuario { get; set; } = null!;
         public UsuarioInterno? ValidadaPorUsuario { get; set; }

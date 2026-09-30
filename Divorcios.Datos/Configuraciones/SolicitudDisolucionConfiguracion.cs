@@ -97,7 +97,7 @@ namespace Divorcios.Datos.Configuraciones
             builder.Property(x => x.Observacion)
                 .HasMaxLength(2000);
 
-            builder.HasIndex(x => x.CasoId)
+            builder.HasIndex(x => x.ExpedienteId)
                 .IsUnique();
 
             builder.HasIndex(x => x.DocumentoSolicitudId)
@@ -111,9 +111,9 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.HasIndex(x => x.EstadoCodigo);
 
-            builder.HasOne(x => x.Caso)
+            builder.HasOne(x => x.Expediente)
                 .WithOne(x => x.SolicitudDisolucion)
-                .HasForeignKey<SolicitudDisolucion>(x => x.CasoId)
+                .HasForeignKey<SolicitudDisolucion>(x => x.ExpedienteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.DocumentoSolicitud)

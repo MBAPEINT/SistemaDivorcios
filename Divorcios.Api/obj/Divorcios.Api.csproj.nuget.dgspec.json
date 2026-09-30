@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Api\\Divorcios.Api.csproj": {}
+    "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Api\\Divorcios.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Api\\Divorcios.Api.csproj": {
+    "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Api\\Divorcios.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Api\\Divorcios.Api.csproj",
+        "projectUniqueName": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Api\\Divorcios.Api.csproj",
         "projectName": "Divorcios.Api",
-        "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Api\\Divorcios.Api.csproj",
+        "projectPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Api\\Divorcios.Api.csproj",
         "packagesPath": "C:\\Users\\Jose\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Api\\obj\\",
+        "outputPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -34,11 +33,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj": {
-                "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj"
-              },
-              "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj": {
-                "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj"
+              "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj": {
+                "projectPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj"
               }
             }
           }
@@ -69,6 +65,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[10.0.12, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerUI": {
+              "target": "Package",
+              "version": "[10.2.3, )"
             }
           },
           "imports": [
@@ -508,14 +508,14 @@
         }
       }
     },
-    "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj": {
+    "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj",
+        "projectUniqueName": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj",
         "projectName": "Divorcios.Datos",
-        "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj",
+        "projectPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj",
         "packagesPath": "C:\\Users\\Jose\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\obj\\",
+        "outputPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Datos\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -530,7 +530,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -538,8 +537,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj": {
-                "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj"
+              "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj": {
+                "projectPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj"
               }
             }
           }
@@ -568,6 +567,10 @@
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
+              "target": "Package",
+              "version": "[10.0.12, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
               "version": "[10.0.12, )"
             },
@@ -876,14 +879,14 @@
         }
       }
     },
-    "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj": {
+    "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj",
+        "projectUniqueName": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj",
         "projectName": "Divorcios.Dominio",
-        "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj",
+        "projectPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj",
         "packagesPath": "C:\\Users\\Jose\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Dominio\\obj\\",
+        "outputPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Dominio\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -898,7 +901,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -1218,14 +1220,14 @@
         }
       }
     },
-    "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj": {
+    "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj",
+        "projectUniqueName": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj",
         "projectName": "Divorcios.Negocio",
-        "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj",
+        "projectPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Negocio\\Divorcios.Negocio.csproj",
         "packagesPath": "C:\\Users\\Jose\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Negocio\\obj\\",
+        "outputPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Negocio\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1240,7 +1242,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -1248,11 +1249,11 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj": {
-                "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj"
+              "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj": {
+                "projectPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Datos\\Divorcios.Datos.csproj"
               },
-              "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj": {
-                "projectPath": "C:\\Users\\Jose\\Documents\\Divorcios - Municipalidad\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj"
+              "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj": {
+                "projectPath": "C:\\Users\\Jose\\Documents\\Municipalidad\\Backend\\SistemaDivorcios\\Divorcios.Dominio\\Divorcios.Dominio.csproj"
               }
             }
           }

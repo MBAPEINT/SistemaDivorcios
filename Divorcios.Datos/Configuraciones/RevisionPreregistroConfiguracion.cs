@@ -85,7 +85,7 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.HasIndex(x => new
             {
-                x.PreregistroId,
+                x.PreregistroVersionId,
                 x.NumeroRevision
             })
                 .IsUnique();
@@ -94,9 +94,9 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.HasIndex(x => x.ResultadoCodigo);
 
-            builder.HasOne(x => x.Preregistro)
+            builder.HasOne(x => x.PreregistroVersion)
                 .WithMany(x => x.Revisiones)
-                .HasForeignKey(x => x.PreregistroId)
+                .HasForeignKey(x => x.PreregistroVersionId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.RevisadoPorUsuario)

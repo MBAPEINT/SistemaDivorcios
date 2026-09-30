@@ -7,7 +7,7 @@ namespace Divorcios.Dominio.Entidades
     public class Notificacion
     {
         public long NotificacionId { get; set; }
-        public long CasoId { get; set; }
+        public long ExpedienteId { get; set; }
         public long PersonaDestinatariaId { get; set; }
         public string CanalCodigo { get; set; } = "WHATSAPP";
         public string TipoCodigo { get; set; } = null!;
@@ -19,7 +19,7 @@ namespace Divorcios.Dominio.Entidades
         public DateTime? FinalizadaEn { get; set; }
         public long? CreadaPorUsuarioId { get; set; }
         public DateTime CreadaEn { get; set; } = DateTime.UtcNow;
-        public Caso Caso { get; set; } = null!;
+        public Expediente Expediente { get; set; } = null!;
         public Persona PersonaDestinataria { get; set; } = null!;
         public UsuarioInterno? CreadaPorUsuario { get; set; }
         public ICollection<IntentoNotificacion> Intentos { get; set; }

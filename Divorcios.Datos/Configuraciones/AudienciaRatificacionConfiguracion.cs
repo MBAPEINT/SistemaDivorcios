@@ -108,26 +108,26 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.HasIndex(x => new
             {
-                x.CasoId,
+                x.ExpedienteId,
                 x.NumeroProgramacion
             })
                 .IsUnique();
 
             builder.HasIndex(x => new
             {
-                x.CasoId,
+                x.ExpedienteId,
                 x.FechaHoraProgramada
             });
 
             builder.HasIndex(x => x.CreadaPorUsuarioId);
 
-            builder.HasIndex(x => x.CasoId)
+            builder.HasIndex(x => x.ExpedienteId)
                 .IsUnique()
                 .HasFilter("estado_codigo = 'PROGRAMADA'");
 
-            builder.HasOne(x => x.Caso)
+            builder.HasOne(x => x.Expediente)
                 .WithMany(x => x.AudienciasRatificacion)
-                .HasForeignKey(x => x.CasoId)
+                .HasForeignKey(x => x.ExpedienteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.CreadaPorUsuario)

@@ -1,5 +1,6 @@
 ﻿using Divorcios.Dominio.Entidades;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Divorcios.Datos.Configuraciones
@@ -52,6 +53,15 @@ namespace Divorcios.Datos.Configuraciones
                             AND cargado_por_usuario_id IS NOT NULL
                         )
                         """);
+                    tabla.HasCheckConstraint(
+                        "ck_documento_version_motivo",
+                        """
+                        numero_version = 1
+                        OR (
+                            motivo_cambio IS NOT NULL
+                            AND btrim(motivo_cambio) <> ''
+                        )
+                        """);
                 });
 
             builder.HasKey(x => x.DocumentoVersionId);
@@ -80,8 +90,10 @@ namespace Divorcios.Datos.Configuraciones
             builder.Property(x => x.Sha256)
                 .HasColumnType("character(64)")
                 .IsRequired();
+            builder.Property(x => x.MotivoCambio)
+                .HasMaxLength(300);
 
-            builder.Property(x => x.CargadoEn)
+            builder.Property(x => x.CreadoEn)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .IsRequired();
 
@@ -115,6 +127,12 @@ namespace Divorcios.Datos.Configuraciones
                 .WithMany(x => x.VersionesDocumentoCargadas)
                 .HasForeignKey(x => x.CargadoPorUsuarioId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Una corrección inserta otra versión; no modifica los valores ya guardados.
+            foreach (var propiedad in builder.Metadata.GetProperties())
+            {
+                propiedad.SetAfterSaveBehavior(PropertySaveBehavior.Throw);
+            }
         }
     }
 }

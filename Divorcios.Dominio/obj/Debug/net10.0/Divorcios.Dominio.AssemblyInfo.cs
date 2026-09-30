@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Divorcios.Dominio")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9477fb6f77c36674045a10218ceff0219f2af265")]
 [assembly: System.Reflection.AssemblyProductAttribute("Divorcios.Dominio")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Divorcios.Dominio")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

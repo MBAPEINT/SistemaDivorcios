@@ -32,10 +32,6 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("ActuacionAdministrativaId"));
 
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
-
                     b.Property<DateTime>("CreadaEn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -45,6 +41,10 @@ namespace Divorcios.Datos.Migraciones
                     b.Property<long>("CreadaPorUsuarioId")
                         .HasColumnType("bigint")
                         .HasColumnName("creada_por_usuario_id");
+
+                    b.Property<long?>("DocumentoId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("documento_id");
 
                     b.Property<DateTime?>("EmitidaEn")
                         .HasColumnType("timestamp with time zone")
@@ -62,14 +62,26 @@ namespace Divorcios.Datos.Migraciones
                         .HasDefaultValue("BORRADOR")
                         .HasColumnName("estado_codigo");
 
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
+
                     b.Property<DateOnly?>("FechaEmision")
                         .HasColumnType("date")
                         .HasColumnName("fecha_emision");
+
+                    b.Property<DateOnly?>("FechaNotificacion")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_notificacion");
 
                     b.Property<string>("NumeroResolucion")
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)")
                         .HasColumnName("numero_resolucion");
+
+                    b.Property<int>("NumeroSecuencia")
+                        .HasColumnType("integer")
+                        .HasColumnName("numero_secuencia");
 
                     b.Property<string>("Observacion")
                         .HasMaxLength(2000)
@@ -78,8 +90,8 @@ namespace Divorcios.Datos.Migraciones
 
                     b.Property<string>("TipoCodigo")
                         .IsRequired()
-                        .HasMaxLength(35)
-                        .HasColumnType("character varying(35)")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
                         .HasColumnName("tipo_codigo");
 
                     b.HasKey("ActuacionAdministrativaId")
@@ -88,32 +100,40 @@ namespace Divorcios.Datos.Migraciones
                     b.HasIndex("CreadaPorUsuarioId")
                         .HasDatabaseName("ix_actuacion_administrativa_creada_por_usuario_id");
 
+                    b.HasIndex("DocumentoId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_actuacion_administrativa_documento_id");
+
                     b.HasIndex("EmitidaPorUsuarioId")
                         .HasDatabaseName("ix_actuacion_administrativa_emitida_por_usuario_id");
 
                     b.HasIndex("EstadoCodigo")
                         .HasDatabaseName("ix_actuacion_administrativa_estado_codigo");
 
-                    b.HasIndex("CasoId", "TipoCodigo")
-                        .IsUnique()
-                        .HasDatabaseName("ix_actuacion_administrativa_caso_id_tipo_codigo");
+                    b.HasIndex("NumeroResolucion")
+                        .HasDatabaseName("ix_actuacion_administrativa_numero_resolucion");
 
-                    b.HasIndex("NumeroResolucion", "FechaEmision")
-                        .HasDatabaseName("ix_actuacion_administrativa_numero_resolucion_fecha_emision");
+                    b.HasIndex("ExpedienteId", "TipoCodigo", "NumeroSecuencia")
+                        .IsUnique()
+                        .HasDatabaseName("ix_actuacion_administrativa_expediente_id_tipo_codigo_numero_s");
 
                     b.ToTable("actuacion_administrativa", "divorcios", t =>
                         {
-                            t.HasCheckConstraint("ck_actuacion_datos_emision", "(\r\n    estado_codigo = 'BORRADOR'\r\n    AND numero_resolucion IS NULL\r\n    AND fecha_emision IS NULL\r\n    AND emitida_por_usuario_id IS NULL\r\n    AND emitida_en IS NULL\r\n)\r\nOR\r\n(\r\n    estado_codigo = 'EMITIDA'\r\n    AND numero_resolucion IS NOT NULL\r\n    AND btrim(numero_resolucion) <> ''\r\n    AND fecha_emision IS NOT NULL\r\n    AND emitida_por_usuario_id IS NOT NULL\r\n    AND emitida_en IS NOT NULL\r\n)");
+                            t.HasCheckConstraint("ck_actuacion_emision", "(\r\n    estado_codigo = 'BORRADOR'\r\n    AND fecha_emision IS NULL\r\n    AND emitida_por_usuario_id IS NULL\r\n    AND emitida_en IS NULL\r\n)\r\nOR\r\n(\r\n    estado_codigo = 'EMITIDA'\r\n    AND fecha_emision IS NOT NULL\r\n    AND emitida_por_usuario_id IS NOT NULL\r\n    AND emitida_en IS NOT NULL\r\n)\r\nOR estado_codigo = 'ANULADA'");
 
-                            t.HasCheckConstraint("ck_actuacion_estado", "estado_codigo IN (\r\n    'BORRADOR',\r\n    'EMITIDA'\r\n)");
+                            t.HasCheckConstraint("ck_actuacion_estado", "estado_codigo IN (\r\n    'BORRADOR',\r\n    'EMITIDA',\r\n    'ANULADA'\r\n)");
 
-                            t.HasCheckConstraint("ck_actuacion_fecha_registro_emision", "emitida_en IS NULL\r\nOR emitida_en >= creada_en");
+                            t.HasCheckConstraint("ck_actuacion_fecha_emision", "emitida_en IS NULL\r\nOR emitida_en >= creada_en");
+
+                            t.HasCheckConstraint("ck_actuacion_fecha_notificacion", "fecha_notificacion IS NULL\r\nOR (\r\n    fecha_emision IS NOT NULL\r\n    AND fecha_notificacion >= fecha_emision\r\n)");
 
                             t.HasCheckConstraint("ck_actuacion_numero_resolucion", "numero_resolucion IS NULL\r\nOR btrim(numero_resolucion) <> ''");
 
                             t.HasCheckConstraint("ck_actuacion_observacion", "observacion IS NULL\r\nOR btrim(observacion) <> ''");
 
-                            t.HasCheckConstraint("ck_actuacion_tipo", "tipo_codigo IN (\r\n    'ADMISIBILIDAD',\r\n    'SEPARACION_CONVENCIONAL',\r\n    'DISOLUCION_VINCULO'\r\n)");
+                            t.HasCheckConstraint("ck_actuacion_secuencia", "numero_secuencia > 0");
+
+                            t.HasCheckConstraint("ck_actuacion_tipo", "tipo_codigo IN (\r\n    'INFORME_ADMISIBILIDAD',\r\n    'RESOLUCION_ADMISIBILIDAD',\r\n    'INFORME_SEPARACION',\r\n    'RESOLUCION_SEPARACION',\r\n    'INFORME_DISOLUCION',\r\n    'RESOLUCION_DISOLUCION'\r\n)");
                         });
                 });
 
@@ -136,9 +156,9 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("bigint")
                         .HasColumnName("audiencia_ratificacion_id");
 
-                    b.Property<long>("CasoConyugeId")
+                    b.Property<long>("ExpedienteConyugeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("caso_conyuge_id");
+                        .HasColumnName("expediente_conyuge_id");
 
                     b.Property<DateTime?>("IdentidadVerificadaEn")
                         .HasColumnType("timestamp with time zone")
@@ -157,10 +177,8 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("observacion");
 
-                    b.Property<bool>("RatificoVoluntad")
-                        .ValueGeneratedOnAdd()
+                    b.Property<bool?>("RatificoVoluntad")
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false)
                         .HasColumnName("ratifico_voluntad");
 
                     b.Property<long?>("RepresentacionId")
@@ -170,29 +188,29 @@ namespace Divorcios.Datos.Migraciones
                     b.HasKey("AsistenciaAudienciaId")
                         .HasName("pk_asistencia_audiencia");
 
-                    b.HasIndex("CasoConyugeId")
-                        .HasDatabaseName("ix_asistencia_audiencia_caso_conyuge_id");
+                    b.HasIndex("ExpedienteConyugeId")
+                        .HasDatabaseName("ix_asistencia_audiencia_expediente_conyuge_id");
 
                     b.HasIndex("RepresentacionId")
                         .HasDatabaseName("ix_asistencia_audiencia_representacion_id");
 
-                    b.HasIndex("AudienciaRatificacionId", "CasoConyugeId")
+                    b.HasIndex("AudienciaRatificacionId", "ExpedienteConyugeId")
                         .IsUnique()
-                        .HasDatabaseName("ix_asistencia_audiencia_audiencia_ratificacion_id_caso_conyuge");
+                        .HasDatabaseName("ix_asistencia_audiencia_audiencia_ratificacion_id_expediente_c");
 
                     b.ToTable("asistencia_audiencia", "divorcios", t =>
                         {
-                            t.HasCheckConstraint("ck_asistencia_inasistencia", "asistio = TRUE\r\nOR (\r\n    ratifico_voluntad = FALSE\r\n    AND identidad_verificada_en IS NULL\r\n)");
+                            t.HasCheckConstraint("ck_asistencia_inasistencia", "asistio IS TRUE\nOR (\n    ratifico_voluntad IS NULL\n    AND identidad_verificada_en IS NULL\r\n)");
 
                             t.HasCheckConstraint("ck_asistencia_modalidad", "modalidad_codigo IN (\r\n    'DIRECTA',\r\n    'APODERADO'\r\n)");
 
                             t.HasCheckConstraint("ck_asistencia_observacion", "observacion IS NULL\r\nOR btrim(observacion) <> ''");
 
-                            t.HasCheckConstraint("ck_asistencia_ratificacion", "ratifico_voluntad = FALSE\r\nOR (\r\n    asistio = TRUE\r\n    AND identidad_verificada_en IS NOT NULL\r\n)");
+                            t.HasCheckConstraint("ck_asistencia_ratificacion", "ratifico_voluntad IS NULL\nOR (\n    asistio IS TRUE\n    AND identidad_verificada_en IS NOT NULL\r\n)");
 
                             t.HasCheckConstraint("ck_asistencia_representacion", "(\r\n    modalidad_codigo = 'DIRECTA'\r\n    AND representacion_id IS NULL\r\n)\r\nOR\r\n(\r\n    modalidad_codigo = 'APODERADO'\r\n    AND representacion_id IS NOT NULL\r\n)");
 
-                            t.HasCheckConstraint("ck_asistencia_verificacion", "identidad_verificada_en IS NULL\r\nOR asistio = TRUE");
+                            t.HasCheckConstraint("ck_asistencia_verificacion", "identidad_verificada_en IS NULL\r\nOR asistio IS TRUE");
                         });
                 });
 
@@ -204,10 +222,6 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnName("audiencia_ratificacion_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("AudienciaRatificacionId"));
-
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
 
                     b.Property<DateTime?>("CerradoEn")
                         .HasColumnType("timestamp with time zone")
@@ -231,6 +245,10 @@ namespace Divorcios.Datos.Migraciones
                         .HasDefaultValue("PROGRAMADA")
                         .HasColumnName("estado_codigo");
 
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
+
                     b.Property<DateTime>("FechaHoraProgramada")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("fecha_hora_programada");
@@ -251,20 +269,20 @@ namespace Divorcios.Datos.Migraciones
                     b.HasKey("AudienciaRatificacionId")
                         .HasName("pk_audiencia_ratificacion");
 
-                    b.HasIndex("CasoId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_audiencia_ratificacion_caso_id")
-                        .HasFilter("estado_codigo = 'PROGRAMADA'");
-
                     b.HasIndex("CreadaPorUsuarioId")
                         .HasDatabaseName("ix_audiencia_ratificacion_creada_por_usuario_id");
 
-                    b.HasIndex("CasoId", "FechaHoraProgramada")
-                        .HasDatabaseName("ix_audiencia_ratificacion_caso_id_fecha_hora_programada");
-
-                    b.HasIndex("CasoId", "NumeroProgramacion")
+                    b.HasIndex("ExpedienteId")
                         .IsUnique()
-                        .HasDatabaseName("ix_audiencia_ratificacion_caso_id_numero_programacion");
+                        .HasDatabaseName("ix_audiencia_ratificacion_expediente_id")
+                        .HasFilter("estado_codigo = 'PROGRAMADA'");
+
+                    b.HasIndex("ExpedienteId", "FechaHoraProgramada")
+                        .HasDatabaseName("ix_audiencia_ratificacion_expediente_id_fecha_hora_programada");
+
+                    b.HasIndex("ExpedienteId", "NumeroProgramacion")
+                        .IsUnique()
+                        .HasDatabaseName("ix_audiencia_ratificacion_expediente_id_numero_programacion");
 
                     b.ToTable("audiencia_ratificacion", "divorcios", t =>
                         {
@@ -277,93 +295,6 @@ namespace Divorcios.Datos.Migraciones
                             t.HasCheckConstraint("ck_audiencia_observacion", "observacion IS NULL\r\nOR btrim(observacion) <> ''");
 
                             t.HasCheckConstraint("ck_audiencia_resultado_observacion", "estado_codigo IN (\r\n    'PROGRAMADA',\r\n    'REALIZADA'\r\n)\r\nOR (\r\n    observacion IS NOT NULL\r\n    AND btrim(observacion) <> ''\r\n)");
-                        });
-                });
-
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.Caso", b =>
-                {
-                    b.Property<long>("CasoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("CasoId"));
-
-                    b.Property<DateTime?>("CerradoEn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("cerrado_en");
-
-                    b.Property<string>("CodigoPre")
-                        .IsRequired()
-                        .HasMaxLength(24)
-                        .HasColumnType("character varying(24)")
-                        .HasColumnName("codigo_pre");
-
-                    b.Property<DateTime>("CreadoEn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creado_en")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<long?>("CreadoPorCuentaId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("creado_por_cuenta_id");
-
-                    b.HasKey("CasoId")
-                        .HasName("pk_caso");
-
-                    b.HasIndex("CodigoPre")
-                        .IsUnique()
-                        .HasDatabaseName("ix_caso_codigo_pre");
-
-                    b.HasIndex("CreadoPorCuentaId")
-                        .HasDatabaseName("ix_caso_creado_por_cuenta_id");
-
-                    b.ToTable("caso", "divorcios", t =>
-                        {
-                            t.HasCheckConstraint("ck_caso_fechas", "cerrado_en IS NULL OR cerrado_en >= creado_en");
-                        });
-                });
-
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.CasoConyuge", b =>
-                {
-                    b.Property<long>("CasoConyugeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_conyuge_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("CasoConyugeId"));
-
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
-
-                    b.Property<long>("PersonaId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("persona_id");
-
-                    b.Property<string>("PosicionCodigo")
-                        .IsRequired()
-                        .HasColumnType("char(1)")
-                        .HasColumnName("posicion_codigo");
-
-                    b.HasKey("CasoConyugeId")
-                        .HasName("pk_caso_conyuge");
-
-                    b.HasIndex("PersonaId")
-                        .HasDatabaseName("ix_caso_conyuge_persona_id");
-
-                    b.HasIndex("CasoId", "PersonaId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_caso_conyuge_caso_id_persona_id");
-
-                    b.HasIndex("CasoId", "PosicionCodigo")
-                        .IsUnique()
-                        .HasDatabaseName("ix_caso_conyuge_caso_id_posicion_codigo");
-
-                    b.ToTable("caso_conyuge", "divorcios", t =>
-                        {
-                            t.HasCheckConstraint("ck_conyuge_posicion", "posicion_codigo IN ('A', 'B')");
                         });
                 });
 
@@ -394,7 +325,7 @@ namespace Divorcios.Datos.Migraciones
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("consultado_en")
-                        .HasDefaultValueSql("now()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Direccion")
                         .HasMaxLength(250)
@@ -406,9 +337,17 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("char(8)")
                         .HasColumnName("dni_consultado");
 
-                    b.Property<DateTime>("ExpiraEn")
+                    b.Property<DateTime?>("ExpiraEn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("expira_en");
+
+                    b.Property<string>("OrigenCodigo")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("API")
+                        .HasColumnName("origen_codigo");
 
                     b.Property<long?>("PersonaId")
                         .HasColumnType("bigint")
@@ -419,17 +358,19 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(120)")
                         .HasColumnName("prenombres");
 
+                    b.Property<string>("RespuestaHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("respuesta_hash");
+
                     b.Property<string>("ResultadoCodigo")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
                         .HasColumnName("resultado_codigo");
 
                     b.HasKey("ConsultaReniecId")
                         .HasName("pk_consulta_reniec");
-
-                    b.HasIndex("ExpiraEn")
-                        .HasDatabaseName("ix_consulta_reniec_expira_en");
 
                     b.HasIndex("PersonaId")
                         .HasDatabaseName("ix_consulta_reniec_persona_id");
@@ -437,17 +378,24 @@ namespace Divorcios.Datos.Migraciones
                     b.HasIndex("DniConsultado", "ConsultadoEn")
                         .HasDatabaseName("ix_consulta_reniec_dni_consultado_consultado_en");
 
+                    b.HasIndex("DniConsultado", "ExpiraEn")
+                        .HasDatabaseName("ix_consulta_reniec_dni_consultado_expira_en");
+
                     b.ToTable("consulta_reniec", "divorcios", t =>
                         {
-                            t.HasCheckConstraint("ck_consulta_reniec_datos_encontrados", "resultado_codigo <> 'ENCONTRADO' OR (prenombres IS NOT NULL AND apellido_paterno IS NOT NULL AND apellido_materno IS NOT NULL)");
+                            t.HasCheckConstraint("ck_consulta_reniec_datos_encontrados", "resultado_codigo <> 'ENCONTRADO'\r\nOR (\r\n    prenombres IS NOT NULL\r\n    AND btrim(prenombres) <> ''\r\n    AND apellido_paterno IS NOT NULL\r\n    AND btrim(apellido_paterno) <> ''\r\n    AND apellido_materno IS NOT NULL\r\n    AND btrim(apellido_materno) <> ''\r\n)");
 
                             t.HasCheckConstraint("ck_consulta_reniec_dni", "dni_consultado ~ '^[0-9]{8}$'");
 
-                            t.HasCheckConstraint("ck_consulta_reniec_expiracion", "expira_en >= consultado_en");
+                            t.HasCheckConstraint("ck_consulta_reniec_expiracion", "expira_en IS NULL\r\nOR expira_en >= consultado_en");
 
-                            t.HasCheckConstraint("ck_consulta_reniec_http", "codigo_http IS NULL OR codigo_http BETWEEN 100 AND 599");
+                            t.HasCheckConstraint("ck_consulta_reniec_hash", "respuesta_hash IS NULL\r\nOR btrim(respuesta_hash) <> ''");
 
-                            t.HasCheckConstraint("ck_consulta_reniec_resultado", "resultado_codigo IN ('ENCONTRADO', 'NO_ENCONTRADO', 'ERROR')");
+                            t.HasCheckConstraint("ck_consulta_reniec_http", "codigo_http IS NULL\r\nOR codigo_http BETWEEN 100 AND 599");
+
+                            t.HasCheckConstraint("ck_consulta_reniec_origen", "origen_codigo IN (\r\n    'API',\r\n    'IMPORTACION'\r\n)");
+
+                            t.HasCheckConstraint("ck_consulta_reniec_resultado", "resultado_codigo IN (\r\n    'ENCONTRADO',\r\n    'NO_ENCONTRADO',\r\n    'ERROR'\r\n)");
                         });
                 });
 
@@ -460,32 +408,71 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("CuentaCiudadanaId"));
 
-                    b.Property<DateTime?>("BloqueadoEn")
+                    b.Property<DateTime?>("BloqueadoHasta")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("bloqueado_en");
+                        .HasColumnName("bloqueado_hasta");
 
                     b.Property<DateTime?>("CelularVerificadoEn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("celular_verificado_en");
 
+                    b.Property<string>("ClaveHash")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("clave_hash");
+
+                    b.Property<DateTime?>("CorreoVerificadoEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("correo_verificado_en");
+
                     b.Property<DateTime>("CreadoEn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creado_en")
-                        .HasDefaultValueSql("now()");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("EstadoCodigo")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("ACTIVA")
+                        .HasColumnName("estado_codigo");
+
+                    b.Property<short>("IntentosFallidos")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((short)0)
+                        .HasColumnName("intentos_fallidos");
 
                     b.Property<long>("PersonaId")
                         .HasColumnType("bigint")
                         .HasColumnName("persona_id");
 
+                    b.Property<DateTime?>("UltimoAccesoEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("ultimo_acceso_en");
+
                     b.HasKey("CuentaCiudadanaId")
                         .HasName("pk_cuenta_ciudadana");
+
+                    b.HasIndex("EstadoCodigo")
+                        .HasDatabaseName("ix_cuenta_ciudadana_estado_codigo");
 
                     b.HasIndex("PersonaId")
                         .IsUnique()
                         .HasDatabaseName("ix_cuenta_ciudadana_persona_id");
 
-                    b.ToTable("cuenta_ciudadana", "divorcios");
+                    b.ToTable("cuenta_ciudadana", "divorcios", t =>
+                        {
+                            t.HasCheckConstraint("ck_cuenta_ciudadana_bloqueo", "estado_codigo <> 'BLOQUEADA'\r\nOR bloqueado_hasta IS NOT NULL");
+
+                            t.HasCheckConstraint("ck_cuenta_ciudadana_estado", "estado_codigo IN (\r\n    'ACTIVA',\r\n    'BLOQUEADA',\r\n    'INACTIVA'\r\n)");
+
+                            t.HasCheckConstraint("ck_cuenta_ciudadana_hash", "clave_hash IS NULL\r\nOR btrim(clave_hash) <> ''");
+
+                            t.HasCheckConstraint("ck_cuenta_ciudadana_intentos", "intentos_fallidos >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.DestinoOficio", b =>
@@ -618,25 +605,37 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("DocumentoId"));
 
-                    b.Property<long?>("ActuacionAdministrativaId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("actuacion_administrativa_id");
-
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
-
                     b.Property<DateTime>("CreadoEn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creado_en")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<long?>("CreadoPorCuentaId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creado_por_cuenta_id");
+
+                    b.Property<long?>("CreadoPorUsuarioId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creado_por_usuario_id");
+
+                    b.Property<string>("EstadoCodigo")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("VIGENTE")
+                        .HasColumnName("estado_codigo");
+
                     b.Property<string>("EtapaCodigo")
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("character varying(25)")
                         .HasColumnName("etapa_codigo");
+
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
 
                     b.Property<long?>("PreregistroRequisitoId")
                         .HasColumnType("bigint")
@@ -655,8 +654,14 @@ namespace Divorcios.Datos.Migraciones
                     b.HasKey("DocumentoId")
                         .HasName("pk_documento");
 
-                    b.HasIndex("ActuacionAdministrativaId")
-                        .HasDatabaseName("ix_documento_actuacion_administrativa_id");
+                    b.HasIndex("CreadoPorCuentaId")
+                        .HasDatabaseName("ix_documento_creado_por_cuenta_id");
+
+                    b.HasIndex("CreadoPorUsuarioId")
+                        .HasDatabaseName("ix_documento_creado_por_usuario_id");
+
+                    b.HasIndex("EstadoCodigo")
+                        .HasDatabaseName("ix_documento_estado_codigo");
 
                     b.HasIndex("PreregistroRequisitoId")
                         .HasDatabaseName("ix_documento_preregistro_requisito_id");
@@ -664,11 +669,15 @@ namespace Divorcios.Datos.Migraciones
                     b.HasIndex("TipoDocumentoId")
                         .HasDatabaseName("ix_documento_tipo_documento_id");
 
-                    b.HasIndex("CasoId", "EtapaCodigo")
-                        .HasDatabaseName("ix_documento_caso_id_etapa_codigo");
+                    b.HasIndex("ExpedienteId", "EtapaCodigo")
+                        .HasDatabaseName("ix_documento_expediente_id_etapa_codigo");
 
                     b.ToTable("documento", "divorcios", t =>
                         {
+                            t.HasCheckConstraint("ck_documento_creador", "NOT (\r\n    creado_por_cuenta_id IS NOT NULL\r\n    AND creado_por_usuario_id IS NOT NULL\r\n)");
+
+                            t.HasCheckConstraint("ck_documento_estado", "estado_codigo IN (\r\n    'VIGENTE',\r\n    'REEMPLAZADO',\r\n    'ANULADO'\r\n)");
+
                             t.HasCheckConstraint("ck_documento_etapa", "etapa_codigo IN (\r\n    'PRERREGISTRO',\r\n    'SEPARACION',\r\n    'DIVORCIO',\r\n    'CIERRE'\r\n)");
 
                             t.HasCheckConstraint("ck_documento_titulo", "btrim(titulo) <> ''");
@@ -690,12 +699,6 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(500)")
                         .HasColumnName("almacenamiento_clave");
 
-                    b.Property<DateTime>("CargadoEn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("cargado_en")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
                     b.Property<long?>("CargadoPorCuentaId")
                         .HasColumnType("bigint")
                         .HasColumnName("cargado_por_cuenta_id");
@@ -703,6 +706,12 @@ namespace Divorcios.Datos.Migraciones
                     b.Property<long?>("CargadoPorUsuarioId")
                         .HasColumnType("bigint")
                         .HasColumnName("cargado_por_usuario_id");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<long>("DocumentoId")
                         .HasColumnType("bigint")
@@ -714,14 +723,19 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(100)")
                         .HasColumnName("mime_type");
 
+                    b.Property<string>("MotivoCambio")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("motivo_cambio");
+
                     b.Property<string>("NombreArchivo")
                         .IsRequired()
                         .HasMaxLength(240)
                         .HasColumnType("character varying(240)")
                         .HasColumnName("nombre_archivo");
 
-                    b.Property<short>("NumeroVersion")
-                        .HasColumnType("smallint")
+                    b.Property<int>("NumeroVersion")
+                        .HasColumnType("integer")
                         .HasColumnName("numero_version");
 
                     b.Property<string>("Sha256")
@@ -761,6 +775,8 @@ namespace Divorcios.Datos.Migraciones
 
                             t.HasCheckConstraint("ck_documento_version_mime", "btrim(mime_type) <> ''");
 
+                            t.HasCheckConstraint("ck_documento_version_motivo", "numero_version = 1\r\nOR (\r\n    motivo_cambio IS NOT NULL\r\n    AND btrim(motivo_cambio) <> ''\r\n)");
+
                             t.HasCheckConstraint("ck_documento_version_nombre", "btrim(nombre_archivo) <> ''");
 
                             t.HasCheckConstraint("ck_documento_version_numero", "numero_version > 0");
@@ -771,14 +787,14 @@ namespace Divorcios.Datos.Migraciones
                         });
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.EstadoCaso", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.EstadoExpediente", b =>
                 {
-                    b.Property<short>("EstadoCasoId")
+                    b.Property<short>("EstadoExpedienteId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("smallint")
-                        .HasColumnName("estado_caso_id");
+                        .HasColumnName("estado_expediente_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<short>("EstadoCasoId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<short>("EstadoExpedienteId"));
 
                     b.Property<bool>("Activo")
                         .ValueGeneratedOnAdd()
@@ -814,18 +830,18 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("smallint")
                         .HasColumnName("orden_visual");
 
-                    b.HasKey("EstadoCasoId")
-                        .HasName("pk_estado_caso");
+                    b.HasKey("EstadoExpedienteId")
+                        .HasName("pk_estado_expediente");
 
                     b.HasIndex("Codigo")
                         .IsUnique()
-                        .HasDatabaseName("ix_estado_caso_codigo");
+                        .HasDatabaseName("ix_estado_expediente_codigo");
 
                     b.HasIndex("EtapaCodigo", "OrdenVisual")
                         .IsUnique()
-                        .HasDatabaseName("ix_estado_caso_etapa_codigo_orden_visual");
+                        .HasDatabaseName("ix_estado_expediente_etapa_codigo_orden_visual");
 
-                    b.ToTable("estado_caso", "divorcios", t =>
+                    b.ToTable("estado_expediente", "divorcios", t =>
                         {
                             t.HasCheckConstraint("ck_estado_etapa", "etapa_codigo IN ('PRERREGISTRO', 'SEPARACION', 'ESPERA', 'DIVORCIO', 'CIERRE')");
 
@@ -842,41 +858,61 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("ExpedienteId"));
 
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
+                    b.Property<DateTime?>("CerradoEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("cerrado_en");
 
-                    b.Property<DateOnly>("FechaIngresoMesaPartes")
+                    b.Property<string>("CodigoPreregistro")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("codigo_preregistro");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<long?>("CreadoPorCuentaId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creado_por_cuenta_id");
+
+                    b.Property<DateOnly?>("FechaIngresoMesaPartes")
                         .HasColumnType("date")
                         .HasColumnName("fecha_ingreso_mesa_partes");
 
+                    b.Property<DateTime>("FechaInicioDigital")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_inicio_digital")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
                     b.Property<string>("NumeroExpediente")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("numero_expediente");
 
-                    b.Property<string>("Observacion")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("observacion");
-
-                    b.Property<DateTime>("RegistradoEn")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTime?>("OficializadoEn")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("registrado_en")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnName("oficializado_en");
 
-                    b.Property<long>("RegistradoPorUsuarioId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("registrado_por_usuario_id");
+                    b.Property<DateTime?>("PreregistroBloqueadoEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("preregistro_bloqueado_en");
 
                     b.HasKey("ExpedienteId")
                         .HasName("pk_expediente");
 
-                    b.HasIndex("CasoId")
+                    b.HasIndex("CerradoEn")
+                        .HasDatabaseName("ix_expediente_cerrado_en");
+
+                    b.HasIndex("CodigoPreregistro")
                         .IsUnique()
-                        .HasDatabaseName("ix_expediente_caso_id");
+                        .HasDatabaseName("ix_expediente_codigo_preregistro");
+
+                    b.HasIndex("CreadoPorCuentaId")
+                        .HasDatabaseName("ix_expediente_creado_por_cuenta_id");
 
                     b.HasIndex("FechaIngresoMesaPartes")
                         .HasDatabaseName("ix_expediente_fecha_ingreso_mesa_partes");
@@ -885,33 +921,298 @@ namespace Divorcios.Datos.Migraciones
                         .IsUnique()
                         .HasDatabaseName("ix_expediente_numero_expediente");
 
-                    b.HasIndex("RegistradoPorUsuarioId")
-                        .HasDatabaseName("ix_expediente_registrado_por_usuario_id");
-
                     b.ToTable("expediente", "divorcios", t =>
                         {
-                            t.HasCheckConstraint("ck_expediente_numero", "btrim(numero_expediente) <> ''");
+                            t.HasCheckConstraint("ck_expediente_bloqueo_preregistro", "preregistro_bloqueado_en IS NULL\r\nOR preregistro_bloqueado_en >= fecha_inicio_digital");
 
-                            t.HasCheckConstraint("ck_expediente_observacion", "observacion IS NULL\r\nOR btrim(observacion) <> ''");
+                            t.HasCheckConstraint("ck_expediente_cierre", "cerrado_en IS NULL\r\nOR cerrado_en >= fecha_inicio_digital");
+
+                            t.HasCheckConstraint("ck_expediente_codigo_preregistro", "btrim(codigo_preregistro) <> ''");
+
+                            t.HasCheckConstraint("ck_expediente_numero", "numero_expediente IS NULL\r\nOR btrim(numero_expediente) <> ''");
+
+                            t.HasCheckConstraint("ck_expediente_oficializacion", "(\r\n    numero_expediente IS NULL\r\n    AND fecha_ingreso_mesa_partes IS NULL\r\n    AND oficializado_en IS NULL\r\n)\r\nOR\r\n(\r\n    numero_expediente IS NOT NULL\r\n    AND fecha_ingreso_mesa_partes IS NOT NULL\r\n    AND oficializado_en IS NOT NULL\r\n)");
                         });
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.HistorialEstadoCaso", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.ExpedienteContactoHistorial", b =>
                 {
-                    b.Property<long>("HistorialEstadoCasoId")
+                    b.Property<long>("ExpedienteContactoHistorialId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("historial_estado_caso_id");
+                        .HasColumnName("expediente_contacto_historial_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("HistorialEstadoCasoId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("ExpedienteContactoHistorialId"));
 
-                    b.Property<long>("CasoId")
+                    b.Property<long>("ExpedienteConyugeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
+                        .HasColumnName("expediente_conyuge_id");
 
-                    b.Property<short>("EstadoCasoId")
+                    b.Property<string>("FuenteCodigo")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("fuente_codigo");
+
+                    b.Property<long?>("PreregistroVersionOrigenId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("preregistro_version_origen_id");
+
+                    b.Property<long?>("RegistradoPorUsuarioId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("registrado_por_usuario_id");
+
+                    b.Property<string>("TipoContactoCodigo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("tipo_contacto_codigo");
+
+                    b.Property<string>("Valor")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("valor");
+
+                    b.Property<DateTime>("VigenteDesde")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("vigente_desde")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime?>("VigenteHasta")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("vigente_hasta");
+
+                    b.HasKey("ExpedienteContactoHistorialId")
+                        .HasName("pk_expediente_contacto_historial");
+
+                    b.HasIndex("PreregistroVersionOrigenId")
+                        .HasDatabaseName("ix_expediente_contacto_historial_preregistro_version_origen_id");
+
+                    b.HasIndex("RegistradoPorUsuarioId")
+                        .HasDatabaseName("ix_expediente_contacto_historial_registrado_por_usuario_id");
+
+                    b.HasIndex("ExpedienteConyugeId", "TipoContactoCodigo")
+                        .IsUnique()
+                        .HasDatabaseName("ix_expediente_contacto_historial_expediente_conyuge_id_tipo_co")
+                        .HasFilter("vigente_hasta IS NULL");
+
+                    b.HasIndex("ExpedienteConyugeId", "TipoContactoCodigo", "VigenteDesde")
+                        .HasDatabaseName("ix_expediente_contacto_historial_expediente_conyuge_id_tipo_co1");
+
+                    b.ToTable("expediente_contacto_historial", "divorcios", t =>
+                        {
+                            t.HasCheckConstraint("ck_expediente_contacto_fuente", "fuente_codigo IN (\r\n    'PRERREGISTRO',\r\n    'RENIEC',\r\n    'MUNICIPALIDAD'\r\n)");
+
+                            t.HasCheckConstraint("ck_expediente_contacto_origen", "fuente_codigo <> 'PRERREGISTRO'\r\nOR preregistro_version_origen_id IS NOT NULL");
+
+                            t.HasCheckConstraint("ck_expediente_contacto_tipo", "tipo_contacto_codigo IN (\r\n    'CELULAR',\r\n    'CORREO',\r\n    'DIRECCION'\r\n)");
+
+                            t.HasCheckConstraint("ck_expediente_contacto_valor", "btrim(valor) <> ''");
+
+                            t.HasCheckConstraint("ck_expediente_contacto_vigencia", "vigente_hasta IS NULL\r\nOR vigente_hasta >= vigente_desde");
+                        });
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.ExpedienteConyuge", b =>
+                {
+                    b.Property<long>("ExpedienteConyugeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_conyuge_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("ExpedienteConyugeId"));
+
+                    b.Property<DateTime>("CreadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("EsIniciador")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("es_iniciador");
+
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
+
+                    b.Property<long>("PersonaId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("persona_id");
+
+                    b.Property<string>("PosicionCodigo")
+                        .IsRequired()
+                        .HasColumnType("char(1)")
+                        .HasColumnName("posicion_codigo");
+
+                    b.HasKey("ExpedienteConyugeId")
+                        .HasName("pk_expediente_conyuge");
+
+                    b.HasIndex("ExpedienteId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_expediente_un_iniciador")
+                        .HasFilter("es_iniciador = TRUE");
+
+                    b.HasIndex("PersonaId")
+                        .HasDatabaseName("ix_expediente_conyuge_persona_id");
+
+                    b.HasIndex("ExpedienteId", "PersonaId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_expediente_conyuge_expediente_id_persona_id");
+
+                    b.HasIndex("ExpedienteId", "PosicionCodigo")
+                        .IsUnique()
+                        .HasDatabaseName("ix_expediente_conyuge_expediente_id_posicion_codigo");
+
+                    b.ToTable("expediente_conyuge", "divorcios", t =>
+                        {
+                            t.HasCheckConstraint("ck_conyuge_posicion", "posicion_codigo IN ('A', 'B')");
+                        });
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.ExpedienteVersion", b =>
+                {
+                    b.Property<long>("ExpedienteVersionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_version_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("ExpedienteVersionId"));
+
+                    b.Property<short>("CantidadHijosMayores")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint")
-                        .HasColumnName("estado_caso_id");
+                        .HasDefaultValue((short)0)
+                        .HasColumnName("cantidad_hijos_mayores");
+
+                    b.Property<short>("CantidadHijosMenores")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((short)0)
+                        .HasColumnName("cantidad_hijos_menores");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("DomicilioConyugal")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("domicilio_conyugal");
+
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
+
+                    b.Property<DateOnly>("FechaMatrimonio")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_matrimonio");
+
+                    b.Property<bool>("MatrimonioEnPorvenir")
+                        .HasColumnType("boolean")
+                        .HasColumnName("matrimonio_en_porvenir");
+
+                    b.Property<string>("MotivoCambio")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("motivo_cambio");
+
+                    b.Property<int>("NumeroVersion")
+                        .HasColumnType("integer")
+                        .HasColumnName("numero_version");
+
+                    b.Property<long?>("PreregistroVersionOrigenId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("preregistro_version_origen_id");
+
+                    b.Property<long>("RegistradoPorUsuarioId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("registrado_por_usuario_id");
+
+                    b.Property<bool?>("RequiereRepresentacionA")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requiere_representacion_a");
+
+                    b.Property<bool?>("RequiereRepresentacionB")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requiere_representacion_b");
+
+                    b.Property<bool>("TieneAcuerdoBienes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("tiene_acuerdo_bienes");
+
+                    b.Property<bool>("TieneBienes")
+                        .HasColumnType("boolean")
+                        .HasColumnName("tiene_bienes");
+
+                    b.Property<bool>("TieneHijos")
+                        .HasColumnType("boolean")
+                        .HasColumnName("tiene_hijos");
+
+                    b.Property<bool?>("TieneHijosMayoresSituacionEspecial")
+                        .HasColumnType("boolean")
+                        .HasColumnName("tiene_hijos_mayores_situacion_especial");
+
+                    b.Property<bool>("UltimoDomicilioConyugalPorvenir")
+                        .HasColumnType("boolean")
+                        .HasColumnName("ultimo_domicilio_conyugal_porvenir");
+
+                    b.HasKey("ExpedienteVersionId")
+                        .HasName("pk_expediente_version");
+
+                    b.HasIndex("PreregistroVersionOrigenId")
+                        .HasDatabaseName("ix_expediente_version_preregistro_version_origen_id");
+
+                    b.HasIndex("RegistradoPorUsuarioId")
+                        .HasDatabaseName("ix_expediente_version_registrado_por_usuario_id");
+
+                    b.HasIndex("ExpedienteId", "NumeroVersion")
+                        .IsUnique()
+                        .HasDatabaseName("ix_expediente_version_expediente_id_numero_version");
+
+                    b.ToTable("expediente_version", "divorcios", t =>
+                        {
+                            t.HasCheckConstraint("ck_expediente_version_acuerdo_bienes", "tiene_bienes\r\nOR tiene_acuerdo_bienes = FALSE");
+
+                            t.HasCheckConstraint("ck_expediente_version_hijos_mayores", "cantidad_hijos_mayores >= 0");
+
+                            t.HasCheckConstraint("ck_expediente_version_hijos_mayores_situacion_especial", "tiene_hijos_mayores_situacion_especial IS NOT TRUE\nOR (tiene_hijos AND cantidad_hijos_mayores > 0)");
+
+                            t.HasCheckConstraint("ck_expediente_version_hijos_menores", "cantidad_hijos_menores >= 0");
+
+                            t.HasCheckConstraint("ck_expediente_version_motivo", "btrim(motivo_cambio) <> ''");
+
+                            t.HasCheckConstraint("ck_expediente_version_numero", "numero_version > 0");
+
+                            t.HasCheckConstraint("ck_expediente_version_sin_hijos", "tiene_hijos\r\nOR (\r\n    cantidad_hijos_menores = 0\r\n    AND cantidad_hijos_mayores = 0\r\n)");
+                        });
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.HistorialEstadoExpediente", b =>
+                {
+                    b.Property<long>("HistorialEstadoExpedienteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("historial_estado_expediente_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("HistorialEstadoExpedienteId"));
+
+                    b.Property<short>("EstadoExpedienteId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("estado_expediente_id");
+
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
 
                     b.Property<DateTime?>("FinalizadoEn")
                         .HasColumnType("timestamp with time zone")
@@ -940,28 +1241,28 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("bigint")
                         .HasColumnName("registrado_por_usuario_id");
 
-                    b.HasKey("HistorialEstadoCasoId")
-                        .HasName("pk_historial_estado_caso");
+                    b.HasKey("HistorialEstadoExpedienteId")
+                        .HasName("pk_historial_estado_expediente");
 
-                    b.HasIndex("CasoId")
+                    b.HasIndex("EstadoExpedienteId")
+                        .HasDatabaseName("ix_historial_estado_expediente_estado_expediente_id");
+
+                    b.HasIndex("ExpedienteId")
                         .IsUnique()
-                        .HasDatabaseName("ix_historial_estado_caso_caso_id")
+                        .HasDatabaseName("ix_historial_estado_expediente_expediente_id")
                         .HasFilter("finalizado_en IS NULL");
 
-                    b.HasIndex("EstadoCasoId")
-                        .HasDatabaseName("ix_historial_estado_caso_estado_caso_id");
-
                     b.HasIndex("RegistradoPorUsuarioId")
-                        .HasDatabaseName("ix_historial_estado_caso_registrado_por_usuario_id");
+                        .HasDatabaseName("ix_historial_estado_expediente_registrado_por_usuario_id");
 
-                    b.HasIndex("CasoId", "IniciadoEn")
-                        .HasDatabaseName("ix_historial_estado_caso_caso_id_iniciado_en");
+                    b.HasIndex("ExpedienteId", "IniciadoEn")
+                        .HasDatabaseName("ix_historial_estado_expediente_expediente_id_iniciado_en");
 
-                    b.HasIndex("CasoId", "NumeroSecuencia")
+                    b.HasIndex("ExpedienteId", "NumeroSecuencia")
                         .IsUnique()
-                        .HasDatabaseName("ix_historial_estado_caso_caso_id_numero_secuencia");
+                        .HasDatabaseName("ix_historial_estado_expediente_expediente_id_numero_secuencia");
 
-                    b.ToTable("historial_estado_caso", "divorcios", t =>
+                    b.ToTable("historial_estado_expediente", "divorcios", t =>
                         {
                             t.HasCheckConstraint("ck_historial_estado_fechas", "finalizado_en IS NULL\r\nOR finalizado_en >= iniciado_en");
 
@@ -1072,10 +1373,6 @@ namespace Divorcios.Datos.Migraciones
                         .HasDefaultValue("WHATSAPP")
                         .HasColumnName("canal_codigo");
 
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
-
                     b.Property<string>("Contenido")
                         .IsRequired()
                         .HasMaxLength(4000)
@@ -1105,6 +1402,10 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(15)")
                         .HasDefaultValue("PENDIENTE")
                         .HasColumnName("estado_codigo");
+
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
 
                     b.Property<DateTime?>("FinalizadaEn")
                         .HasColumnType("timestamp with time zone")
@@ -1141,11 +1442,11 @@ namespace Divorcios.Datos.Migraciones
                     b.HasIndex("TipoCodigo")
                         .HasDatabaseName("ix_notificacion_tipo_codigo");
 
-                    b.HasIndex("CasoId", "CreadaEn")
-                        .HasDatabaseName("ix_notificacion_caso_id_creada_en");
-
                     b.HasIndex("EstadoCodigo", "ProximoIntentoEn")
                         .HasDatabaseName("ix_notificacion_estado_codigo_proximo_intento_en");
+
+                    b.HasIndex("ExpedienteId", "CreadaEn")
+                        .HasDatabaseName("ix_notificacion_expediente_id_creada_en");
 
                     b.ToTable("notificacion", "divorcios", t =>
                         {
@@ -1182,7 +1483,7 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("smallint")
                         .HasColumnName("destino_oficio_id");
 
-                    b.Property<long>("DocumentoOficioId")
+                    b.Property<long?>("DocumentoOficioId")
                         .HasColumnType("bigint")
                         .HasColumnName("documento_oficio_id");
 
@@ -1263,32 +1564,61 @@ namespace Divorcios.Datos.Migraciones
                         });
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.PagoTramite", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.Pago", b =>
                 {
-                    b.Property<long>("PagoTramiteId")
+                    b.Property<long>("PagoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("pago_tramite_id");
+                        .HasColumnName("pago_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("PagoTramiteId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("PagoId"));
 
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
+                    b.Property<DateTime?>("AnuladoEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("anulado_en");
 
                     b.Property<string>("ConceptoCodigo")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
                         .HasColumnName("concepto_codigo");
+
+                    b.Property<string>("ConceptoDescripcionSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("concepto_descripcion_snapshot");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("DniPaganteSnapshot")
+                        .IsRequired()
+                        .HasColumnType("char(8)")
+                        .HasColumnName("dni_pagante_snapshot");
 
                     b.Property<long?>("DocumentoComprobanteId")
                         .HasColumnType("bigint")
                         .HasColumnName("documento_comprobante_id");
 
-                    b.Property<DateOnly>("FechaPago")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_pago");
+                    b.Property<string>("EstadoCodigo")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("PENDIENTE")
+                        .HasColumnName("estado_codigo");
+
+                    b.Property<long>("ExpedienteConyugePaganteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_conyuge_pagante_id");
+
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
 
                     b.Property<string>("MonedaCodigo")
                         .IsRequired()
@@ -1303,8 +1633,17 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("numeric(10,2)")
                         .HasColumnName("monto");
 
-                    b.Property<string>("NumeroVoucher")
+                    b.Property<string>("NombrePaganteSnapshot")
                         .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("nombre_pagante_snapshot");
+
+                    b.Property<int>("NumeroPago")
+                        .HasColumnType("integer")
+                        .HasColumnName("numero_pago");
+
+                    b.Property<string>("NumeroVoucher")
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)")
                         .HasColumnName("numero_voucher");
@@ -1314,49 +1653,86 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("observacion");
 
-                    b.Property<DateTime>("RegistradoEn")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTime?>("PagadoEn")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("registrado_en")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnName("pagado_en");
+
+                    b.Property<string>("ReferenciaCaja")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("referencia_caja");
 
                     b.Property<long>("RegistradoPorUsuarioId")
                         .HasColumnType("bigint")
                         .HasColumnName("registrado_por_usuario_id");
 
-                    b.HasKey("PagoTramiteId")
-                        .HasName("pk_pago_tramite");
+                    b.Property<DateTime>("SolicitadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("solicitado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.HasIndex("ConceptoCodigo")
-                        .HasDatabaseName("ix_pago_tramite_concepto_codigo");
+                    b.Property<DateTime?>("UltimaConsultaCajaEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("ultima_consulta_caja_en");
+
+                    b.HasKey("PagoId")
+                        .HasName("pk_pago");
 
                     b.HasIndex("DocumentoComprobanteId")
                         .IsUnique()
-                        .HasDatabaseName("ix_pago_tramite_documento_comprobante_id");
+                        .HasDatabaseName("ix_pago_documento_comprobante_id");
+
+                    b.HasIndex("ExpedienteConyugePaganteId")
+                        .HasDatabaseName("ix_pago_expediente_conyuge_pagante_id");
+
+                    b.HasIndex("NumeroVoucher")
+                        .IsUnique()
+                        .HasDatabaseName("ix_pago_numero_voucher")
+                        .HasFilter("numero_voucher IS NOT NULL");
+
+                    b.HasIndex("ReferenciaCaja")
+                        .IsUnique()
+                        .HasDatabaseName("ix_pago_referencia_caja")
+                        .HasFilter("referencia_caja IS NOT NULL");
 
                     b.HasIndex("RegistradoPorUsuarioId")
-                        .HasDatabaseName("ix_pago_tramite_registrado_por_usuario_id");
+                        .HasDatabaseName("ix_pago_registrado_por_usuario_id");
 
-                    b.HasIndex("CasoId", "FechaPago")
-                        .HasDatabaseName("ix_pago_tramite_caso_id_fecha_pago");
+                    b.HasIndex("EstadoCodigo", "SolicitadoEn")
+                        .HasDatabaseName("ix_pago_estado_codigo_solicitado_en");
 
-                    b.HasIndex("NumeroVoucher", "FechaPago")
+                    b.HasIndex("ExpedienteId", "NumeroPago")
                         .IsUnique()
-                        .HasDatabaseName("ix_pago_tramite_numero_voucher_fecha_pago");
+                        .HasDatabaseName("ix_pago_expediente_id_numero_pago");
 
-                    b.ToTable("pago_tramite", "divorcios", t =>
+                    b.ToTable("pago", "divorcios", t =>
                         {
-                            t.HasCheckConstraint("ck_pago_tramite_concepto", "concepto_codigo IN (\r\n    'COPIAS_CERTIFICADAS',\r\n    'TASA_PROCEDIMIENTO',\r\n    'OTRO'\r\n)");
+                            t.HasCheckConstraint("ck_pago_concepto", "btrim(concepto_codigo) <> ''");
 
-                            t.HasCheckConstraint("ck_pago_tramite_moneda", "moneda_codigo = 'PEN'");
+                            t.HasCheckConstraint("ck_pago_descripcion", "btrim(concepto_descripcion_snapshot) <> ''");
 
-                            t.HasCheckConstraint("ck_pago_tramite_monto", "monto > 0");
+                            t.HasCheckConstraint("ck_pago_dni", "dni_pagante_snapshot ~ '^[0-9]{8}$'");
 
-                            t.HasCheckConstraint("ck_pago_tramite_observacion", "observacion IS NULL\r\nOR btrim(observacion) <> ''");
+                            t.HasCheckConstraint("ck_pago_estado", "estado_codigo IN (\r\n    'PENDIENTE',\r\n    'PAGADO',\r\n    'ANULADO'\r\n)");
 
-                            t.HasCheckConstraint("ck_pago_tramite_otro", "concepto_codigo <> 'OTRO'\r\nOR (\r\n    observacion IS NOT NULL\r\n    AND btrim(observacion) <> ''\r\n)");
+                            t.HasCheckConstraint("ck_pago_fechas", "(\r\n    ultima_consulta_caja_en IS NULL\r\n    OR ultima_consulta_caja_en >= solicitado_en\r\n)\r\nAND\r\n(\r\n    pagado_en IS NULL\r\n    OR pagado_en >= solicitado_en\r\n)\r\nAND\r\n(\r\n    anulado_en IS NULL\r\n    OR anulado_en >= solicitado_en\r\n)\r\nAND\r\n(\r\n    pagado_en IS NULL\r\n    OR anulado_en IS NULL\r\n    OR anulado_en >= pagado_en\r\n)");
 
-                            t.HasCheckConstraint("ck_pago_tramite_voucher", "btrim(numero_voucher) <> ''");
+                            t.HasCheckConstraint("ck_pago_flujo", "(\r\n    estado_codigo = 'PENDIENTE'\r\n    AND pagado_en IS NULL\r\n    AND anulado_en IS NULL\r\n    AND numero_voucher IS NULL\r\n)\r\nOR\r\n(\r\n    estado_codigo = 'PAGADO'\r\n    AND pagado_en IS NOT NULL\n    AND anulado_en IS NULL\n    AND numero_voucher IS NOT NULL\n)\r\nOR\r\n(\n    estado_codigo = 'ANULADO'\n    AND anulado_en IS NOT NULL\n    AND (\n        pagado_en IS NULL\n        OR numero_voucher IS NOT NULL\n    )\n)");
+
+                            t.HasCheckConstraint("ck_pago_moneda", "moneda_codigo = 'PEN'");
+
+                            t.HasCheckConstraint("ck_pago_monto", "monto > 0");
+
+                            t.HasCheckConstraint("ck_pago_nombre", "btrim(nombre_pagante_snapshot) <> ''");
+
+                            t.HasCheckConstraint("ck_pago_numero", "numero_pago > 0");
+
+                            t.HasCheckConstraint("ck_pago_observacion", "observacion IS NULL\r\nOR btrim(observacion) <> ''");
+
+                            t.HasCheckConstraint("ck_pago_referencia_caja", "referencia_caja IS NULL\r\nOR btrim(referencia_caja) <> ''");
+
+                            t.HasCheckConstraint("ck_pago_voucher", "numero_voucher IS NULL\r\nOR btrim(numero_voucher) <> ''");
                         });
                 });
 
@@ -1368,6 +1744,10 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnName("persona_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("PersonaId"));
+
+                    b.Property<DateTime?>("ActualizadoEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("actualizado_en");
 
                     b.Property<string>("ApellidoMaterno")
                         .IsRequired()
@@ -1413,6 +1793,12 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(120)")
                         .HasColumnName("nombres");
 
+                    b.Property<bool>("VerificadoReniec")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("verificado_reniec");
+
                     b.Property<DateTime?>("VerificadoReniecEn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("verificado_reniec_en");
@@ -1426,6 +1812,8 @@ namespace Divorcios.Datos.Migraciones
 
                     b.ToTable("persona", "divorcios", t =>
                         {
+                            t.HasCheckConstraint("ck_persona_actualizacion", "actualizado_en IS NULL\r\nOR actualizado_en >= creado_en");
+
                             t.HasCheckConstraint("ck_persona_apellido_materno", "btrim(apellido_materno) <> ''");
 
                             t.HasCheckConstraint("ck_persona_apellido_paterno", "btrim(apellido_paterno) <> ''");
@@ -1435,21 +1823,19 @@ namespace Divorcios.Datos.Migraciones
                             t.HasCheckConstraint("ck_persona_dni", "dni ~ '^[0-9]{8}$'");
 
                             t.HasCheckConstraint("ck_persona_nombres", "btrim(nombres) <> ''");
+
+                            t.HasCheckConstraint("ck_persona_verificacion_reniec", "(\r\n    verificado_reniec = FALSE\r\n    AND verificado_reniec_en IS NULL\r\n)\r\nOR\r\n(\r\n    verificado_reniec = TRUE\r\n    AND verificado_reniec_en IS NOT NULL\r\n)");
                         });
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.PlazoCaso", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.PlazoExpediente", b =>
                 {
-                    b.Property<long>("PlazoCasoId")
+                    b.Property<long>("PlazoExpedienteId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("plazo_caso_id");
+                        .HasColumnName("plazo_expediente_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("PlazoCasoId"));
-
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("PlazoExpedienteId"));
 
                     b.Property<DateTime?>("CerradoEn")
                         .HasColumnType("timestamp with time zone")
@@ -1473,6 +1859,10 @@ namespace Divorcios.Datos.Migraciones
                         .HasDefaultValue("PENDIENTE")
                         .HasColumnName("estado_codigo");
 
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
+
                     b.Property<DateOnly>("FechaInicio")
                         .HasColumnType("date")
                         .HasColumnName("fecha_inicio");
@@ -1481,9 +1871,9 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("date")
                         .HasColumnName("fecha_vencimiento");
 
-                    b.Property<long?>("HistorialEstadoCasoOrigenId")
+                    b.Property<long?>("HistorialEstadoExpedienteOrigenId")
                         .HasColumnType("bigint")
-                        .HasColumnName("historial_estado_caso_origen_id");
+                        .HasColumnName("historial_estado_expediente_origen_id");
 
                     b.Property<int>("NumeroAplicacion")
                         .HasColumnType("integer")
@@ -1498,36 +1888,36 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("smallint")
                         .HasColumnName("regla_plazo_id");
 
-                    b.HasKey("PlazoCasoId")
-                        .HasName("pk_plazo_caso");
+                    b.HasKey("PlazoExpedienteId")
+                        .HasName("pk_plazo_expediente");
 
                     b.HasIndex("CreadoPorUsuarioId")
-                        .HasDatabaseName("ix_plazo_caso_creado_por_usuario_id");
+                        .HasDatabaseName("ix_plazo_expediente_creado_por_usuario_id");
 
-                    b.HasIndex("HistorialEstadoCasoOrigenId")
-                        .HasDatabaseName("ix_plazo_caso_historial_estado_caso_origen_id");
+                    b.HasIndex("HistorialEstadoExpedienteOrigenId")
+                        .HasDatabaseName("ix_plazo_expediente_historial_estado_expediente_origen_id");
 
                     b.HasIndex("ReglaPlazoId")
-                        .HasDatabaseName("ix_plazo_caso_regla_plazo_id");
+                        .HasDatabaseName("ix_plazo_expediente_regla_plazo_id");
 
-                    b.HasIndex("CasoId", "EstadoCodigo", "FechaVencimiento")
-                        .HasDatabaseName("ix_plazo_caso_caso_id_estado_codigo_fecha_vencimiento");
+                    b.HasIndex("ExpedienteId", "EstadoCodigo", "FechaVencimiento")
+                        .HasDatabaseName("ix_plazo_expediente_expediente_id_estado_codigo_fecha_vencimie");
 
-                    b.HasIndex("CasoId", "ReglaPlazoId", "NumeroAplicacion")
+                    b.HasIndex("ExpedienteId", "ReglaPlazoId", "NumeroAplicacion")
                         .IsUnique()
-                        .HasDatabaseName("ix_plazo_caso_caso_id_regla_plazo_id_numero_aplicacion");
+                        .HasDatabaseName("ix_plazo_expediente_expediente_id_regla_plazo_id_numero_aplica");
 
-                    b.ToTable("plazo_caso", "divorcios", t =>
+                    b.ToTable("plazo_expediente", "divorcios", t =>
                         {
-                            t.HasCheckConstraint("ck_plazo_caso_aplicacion", "numero_aplicacion > 0");
+                            t.HasCheckConstraint("ck_plazo_expediente_cierre", "(\r\n    estado_codigo = 'PENDIENTE'\r\n    AND cerrado_en IS NULL\r\n)\r\nOR\r\n(\r\n    estado_codigo IN (\r\n        'CUMPLIDO',\r\n        'CANCELADO'\r\n    )\r\n    AND cerrado_en IS NOT NULL\r\n)");
 
-                            t.HasCheckConstraint("ck_plazo_caso_cierre", "(\r\n    estado_codigo = 'PENDIENTE'\r\n    AND cerrado_en IS NULL\r\n)\r\nOR\r\n(\r\n    estado_codigo IN (\r\n        'CUMPLIDO',\r\n        'CANCELADO'\r\n    )\r\n    AND cerrado_en IS NOT NULL\r\n)");
+                            t.HasCheckConstraint("ck_plazo_expediente_estado", "estado_codigo IN (\r\n    'PENDIENTE',\r\n    'CUMPLIDO',\r\n    'CANCELADO'\r\n)");
 
-                            t.HasCheckConstraint("ck_plazo_caso_estado", "estado_codigo IN (\r\n    'PENDIENTE',\r\n    'CUMPLIDO',\r\n    'CANCELADO'\r\n)");
+                            t.HasCheckConstraint("ck_plazo_expediente_estado_aplicacion", "numero_aplicacion > 0");
 
-                            t.HasCheckConstraint("ck_plazo_caso_fechas", "fecha_vencimiento >= fecha_inicio");
+                            t.HasCheckConstraint("ck_plazo_expediente_fechas", "fecha_vencimiento >= fecha_inicio");
 
-                            t.HasCheckConstraint("ck_plazo_caso_observacion", "observacion IS NULL\r\nOR btrim(observacion) <> ''");
+                            t.HasCheckConstraint("ck_plazo_expediente_observacion", "observacion IS NULL\r\nOR btrim(observacion) <> ''");
                         });
                 });
 
@@ -1544,21 +1934,9 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("aprobado_en");
 
-                    b.Property<short>("CantidadHijosMayoresIncapaces")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)0)
-                        .HasColumnName("cantidad_hijos_mayores_incapaces");
-
-                    b.Property<short>("CantidadHijosMenores")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)0)
-                        .HasColumnName("cantidad_hijos_menores");
-
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
+                    b.Property<DateTime?>("BloqueadoEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("bloqueado_en");
 
                     b.Property<DateTime>("CreadoEn")
                         .ValueGeneratedOnAdd()
@@ -1570,44 +1948,37 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("enviado_en");
 
-                    b.Property<DateOnly>("FechaMatrimonio")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_matrimonio");
-
-                    b.Property<bool>("MatrimonioEnPorvenir")
-                        .HasColumnType("boolean")
-                        .HasColumnName("matrimonio_en_porvenir");
-
-                    b.Property<bool>("MutuoAcuerdoDeclarado")
-                        .HasColumnType("boolean")
-                        .HasColumnName("mutuo_acuerdo_declarado");
-
-                    b.Property<bool>("TieneBienesSociales")
+                    b.Property<string>("EstadoCodigo")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("tiene_bienes_sociales");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("BORRADOR")
+                        .HasColumnName("estado_codigo");
 
-                    b.Property<bool>("UltimoDomicilioConyugalEnPorvenir")
-                        .HasColumnType("boolean")
-                        .HasColumnName("ultimo_domicilio_conyugal_en_porvenir");
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
 
                     b.HasKey("PreregistroId")
                         .HasName("pk_preregistro");
 
-                    b.HasIndex("CasoId")
+                    b.HasIndex("EstadoCodigo")
+                        .HasDatabaseName("ix_preregistro_estado_codigo");
+
+                    b.HasIndex("ExpedienteId")
                         .IsUnique()
-                        .HasDatabaseName("ix_preregistro_caso_id");
+                        .HasDatabaseName("ix_preregistro_expediente_id");
 
                     b.ToTable("preregistro", "divorcios", t =>
                         {
                             t.HasCheckConstraint("ck_preregistro_aprobacion", "aprobado_en IS NULL\r\nOR (\r\n    enviado_en IS NOT NULL\r\n    AND aprobado_en >= enviado_en\r\n)");
 
-                            t.HasCheckConstraint("ck_preregistro_envio", "enviado_en IS NULL OR enviado_en >= creado_en");
+                            t.HasCheckConstraint("ck_preregistro_bloqueo", "bloqueado_en IS NULL\r\nOR (\r\n    aprobado_en IS NOT NULL\r\n    AND bloqueado_en >= aprobado_en\r\n)");
 
-                            t.HasCheckConstraint("ck_preregistro_hijos_mayores_incapaces", "cantidad_hijos_mayores_incapaces >= 0");
+                            t.HasCheckConstraint("ck_preregistro_envio", "enviado_en IS NULL\r\nOR enviado_en >= creado_en");
 
-                            t.HasCheckConstraint("ck_preregistro_hijos_menores", "cantidad_hijos_menores >= 0");
+                            t.HasCheckConstraint("ck_preregistro_estado", "estado_codigo IN (\r\n    'BORRADOR',\r\n    'ENVIADO',\r\n    'OBSERVADO',\r\n    'APROBADO',\r\n    'CANCELADO'\r\n)");
                         });
                 });
 
@@ -1620,6 +1991,12 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("PreregistroRequisitoId"));
 
+                    b.Property<bool>("Aplica")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("aplica");
+
                     b.Property<string>("EstadoCodigo")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -1628,15 +2005,21 @@ namespace Divorcios.Datos.Migraciones
                         .HasDefaultValue("PENDIENTE")
                         .HasColumnName("estado_codigo");
 
+                    b.Property<DateTime>("GeneradoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("generado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
                     b.Property<bool>("Obligatorio")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("obligatorio");
 
-                    b.Property<long>("PreregistroId")
+                    b.Property<long>("PreregistroVersionId")
                         .HasColumnType("bigint")
-                        .HasColumnName("preregistro_id");
+                        .HasColumnName("preregistro_version_id");
 
                     b.Property<short>("RequisitoCatalogoId")
                         .HasColumnType("smallint")
@@ -1648,13 +2031,152 @@ namespace Divorcios.Datos.Migraciones
                     b.HasIndex("RequisitoCatalogoId")
                         .HasDatabaseName("ix_preregistro_requisito_requisito_catalogo_id");
 
-                    b.HasIndex("PreregistroId", "RequisitoCatalogoId")
+                    b.HasIndex("PreregistroVersionId", "RequisitoCatalogoId")
                         .IsUnique()
-                        .HasDatabaseName("ix_preregistro_requisito_preregistro_id_requisito_catalogo_id");
+                        .HasDatabaseName("ix_preregistro_requisito_preregistro_version_id_requisito_cata");
 
                     b.ToTable("preregistro_requisito", "divorcios", t =>
                         {
                             t.HasCheckConstraint("ck_preregistro_requisito_estado", "estado_codigo IN (\r\n    'PENDIENTE',\r\n    'CARGADO',\r\n    'CONFORME',\r\n    'OBSERVADO',\r\n    'NO_APLICA'\r\n)");
+                        });
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.PreregistroRequisitoDocumento", b =>
+                {
+                    b.Property<long>("PreregistroRequisitoId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("preregistro_requisito_id");
+
+                    b.Property<long>("DocumentoVersionId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("documento_version_id");
+
+                    b.HasKey("PreregistroRequisitoId", "DocumentoVersionId")
+                        .HasName("pk_preregistro_requisito_documento");
+
+                    b.HasIndex("DocumentoVersionId")
+                        .HasDatabaseName("ix_preregistro_requisito_documento_documento_version_id");
+
+                    b.ToTable("preregistro_requisito_documento", "divorcios");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.PreregistroVersion", b =>
+                {
+                    b.Property<long>("PreregistroVersionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("preregistro_version_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("PreregistroVersionId"));
+
+                    b.Property<short>("CantidadHijosMayores")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((short)0)
+                        .HasColumnName("cantidad_hijos_mayores");
+
+                    b.Property<short>("CantidadHijosMenores")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((short)0)
+                        .HasColumnName("cantidad_hijos_menores");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<long>("CreadoPorCuentaId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creado_por_cuenta_id");
+
+                    b.Property<string>("DomicilioConyugal")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("domicilio_conyugal");
+
+                    b.Property<DateOnly>("FechaMatrimonio")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_matrimonio");
+
+                    b.Property<bool>("MatrimonioEnPorvenir")
+                        .HasColumnType("boolean")
+                        .HasColumnName("matrimonio_en_porvenir");
+
+                    b.Property<string>("MotivoCambio")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("motivo_cambio");
+
+                    b.Property<int>("NumeroVersion")
+                        .HasColumnType("integer")
+                        .HasColumnName("numero_version");
+
+                    b.Property<string>("ObservacionCiudadano")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("observacion_ciudadano");
+
+                    b.Property<long>("PreregistroId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("preregistro_id");
+
+                    b.Property<bool?>("RequiereRepresentacionA")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requiere_representacion_a");
+
+                    b.Property<bool?>("RequiereRepresentacionB")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requiere_representacion_b");
+
+                    b.Property<bool>("TieneAcuerdoBienes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("tiene_acuerdo_bienes");
+
+                    b.Property<bool>("TieneBienes")
+                        .HasColumnType("boolean")
+                        .HasColumnName("tiene_bienes");
+
+                    b.Property<bool>("TieneHijos")
+                        .HasColumnType("boolean")
+                        .HasColumnName("tiene_hijos");
+
+                    b.Property<bool?>("TieneHijosMayoresSituacionEspecial")
+                        .HasColumnType("boolean")
+                        .HasColumnName("tiene_hijos_mayores_situacion_especial");
+
+                    b.Property<bool>("UltimoDomicilioConyugalPorvenir")
+                        .HasColumnType("boolean")
+                        .HasColumnName("ultimo_domicilio_conyugal_porvenir");
+
+                    b.HasKey("PreregistroVersionId")
+                        .HasName("pk_preregistro_version");
+
+                    b.HasIndex("CreadoPorCuentaId")
+                        .HasDatabaseName("ix_preregistro_version_creado_por_cuenta_id");
+
+                    b.HasIndex("PreregistroId", "NumeroVersion")
+                        .IsUnique()
+                        .HasDatabaseName("ix_preregistro_version_preregistro_id_numero_version");
+
+                    b.ToTable("preregistro_version", "divorcios", t =>
+                        {
+                            t.HasCheckConstraint("ck_preregistro_version_acuerdo_bienes", "tiene_bienes\r\nOR tiene_acuerdo_bienes = FALSE");
+
+                            t.HasCheckConstraint("ck_preregistro_version_hijos_mayores", "cantidad_hijos_mayores >= 0");
+
+                            t.HasCheckConstraint("ck_preregistro_version_hijos_mayores_situacion_especial", "tiene_hijos_mayores_situacion_especial IS NOT TRUE\nOR (tiene_hijos AND cantidad_hijos_mayores > 0)");
+
+                            t.HasCheckConstraint("ck_preregistro_version_hijos_menores", "cantidad_hijos_menores >= 0");
+
+                            t.HasCheckConstraint("ck_preregistro_version_motivo", "numero_version = 1\r\nOR (\r\n    motivo_cambio IS NOT NULL\r\n    AND btrim(motivo_cambio) <> ''\r\n)");
+
+                            t.HasCheckConstraint("ck_preregistro_version_numero", "numero_version > 0");
+
+                            t.HasCheckConstraint("ck_preregistro_version_sin_hijos", "tiene_hijos\r\nOR (\r\n    cantidad_hijos_menores = 0\r\n    AND cantidad_hijos_mayores = 0\r\n)");
                         });
                 });
 
@@ -1679,10 +2201,6 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(25)")
                         .HasColumnName("actor_tipo_codigo");
 
-                    b.Property<long?>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
-
                     b.Property<Guid>("CorrelacionId")
                         .HasColumnType("uuid")
                         .HasColumnName("correlacion_id");
@@ -1704,6 +2222,10 @@ namespace Divorcios.Datos.Migraciones
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("direccion_ip");
+
+                    b.Property<long?>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
 
                     b.Property<string>("RecursoCodigo")
                         .IsRequired()
@@ -1748,11 +2270,11 @@ namespace Divorcios.Datos.Migraciones
                     b.HasIndex("AccionCodigo", "RegistradoEn")
                         .HasDatabaseName("ix_registro_auditoria_accion_codigo_registrado_en");
 
-                    b.HasIndex("CasoId", "RegistradoEn")
-                        .HasDatabaseName("ix_registro_auditoria_caso_id_registrado_en");
-
                     b.HasIndex("CuentaCiudadanaId", "RegistradoEn")
                         .HasDatabaseName("ix_registro_auditoria_cuenta_ciudadana_id_registrado_en");
+
+                    b.HasIndex("ExpedienteId", "RegistradoEn")
+                        .HasDatabaseName("ix_registro_auditoria_expediente_id_registrado_en");
 
                     b.HasIndex("RecursoCodigo", "RecursoId")
                         .HasDatabaseName("ix_registro_auditoria_recurso_codigo_recurso_id");
@@ -1794,38 +2316,55 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<short>("ReglaPlazoId"));
 
+                    b.Property<bool>("Activo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("activo");
+
                     b.Property<short>("Cantidad")
                         .HasColumnType("smallint")
                         .HasColumnName("cantidad");
 
                     b.Property<string>("Codigo")
                         .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("character varying(45)")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("codigo");
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("descripcion");
+
+                    b.Property<string>("EventoInicioCodigo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("evento_inicio_codigo");
 
                     b.Property<string>("Fuente")
                         .IsRequired()
-                        .HasMaxLength(180)
-                        .HasColumnType("character varying(180)")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
                         .HasColumnName("fuente");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(180)
-                        .HasColumnType("character varying(180)")
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)")
                         .HasColumnName("nombre");
 
                     b.Property<string>("TipoDiaCodigo")
                         .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("tipo_dia_codigo");
 
                     b.Property<string>("UnidadCodigo")
                         .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("unidad_codigo");
 
                     b.Property<DateOnly>("VigenteDesde")
@@ -1839,19 +2378,28 @@ namespace Divorcios.Datos.Migraciones
                     b.HasKey("ReglaPlazoId")
                         .HasName("pk_regla_plazo");
 
+                    b.HasIndex("Activo", "EventoInicioCodigo")
+                        .HasDatabaseName("ix_regla_plazo_activo_evento_inicio_codigo");
+
                     b.HasIndex("Codigo", "VigenteDesde")
                         .IsUnique()
                         .HasDatabaseName("ix_regla_plazo_codigo_vigente_desde");
 
                     b.ToTable("regla_plazo", "divorcios", t =>
                         {
-                            t.HasCheckConstraint("ck_regla_cantidad", "cantidad > 0");
+                            t.HasCheckConstraint("ck_regla_plazo_cantidad", "cantidad > 0");
 
-                            t.HasCheckConstraint("ck_regla_tipo_dia", "tipo_dia_codigo IN ('CALENDARIO', 'HABIL', 'OPERATIVO')");
+                            t.HasCheckConstraint("ck_regla_plazo_descripcion", "descripcion IS NULL\r\nOR btrim(descripcion) <> ''");
 
-                            t.HasCheckConstraint("ck_regla_unidad", "unidad_codigo IN ('DIA', 'MES')");
+                            t.HasCheckConstraint("ck_regla_plazo_evento_inicio", "btrim(evento_inicio_codigo) <> ''");
 
-                            t.HasCheckConstraint("ck_regla_vigencia", "vigente_hasta IS NULL OR vigente_hasta >= vigente_desde");
+                            t.HasCheckConstraint("ck_regla_plazo_fuente", "btrim(fuente) <> ''");
+
+                            t.HasCheckConstraint("ck_regla_plazo_tipo_dia", "tipo_dia_codigo IN (\r\n    'CALENDARIO',\r\n    'HABIL',\r\n    'OPERATIVO'\r\n)");
+
+                            t.HasCheckConstraint("ck_regla_plazo_unidad", "unidad_codigo IN ('DIA', 'MES')");
+
+                            t.HasCheckConstraint("ck_regla_plazo_vigencia", "vigente_hasta IS NULL\r\nOR vigente_hasta >= vigente_desde");
                         });
                 });
 
@@ -1864,23 +2412,39 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("RepresentacionId"));
 
-                    b.Property<long>("CasoConyugeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_conyuge_id");
-
                     b.Property<DateTime>("CreadoEn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creado_en")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<long>("DocumentoPoderId")
+                    b.Property<long?>("DocumentoPoderId")
                         .HasColumnType("bigint")
                         .HasColumnName("documento_poder_id");
+
+                    b.Property<string>("EstadoCodigo")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("VIGENTE")
+                        .HasColumnName("estado_codigo");
+
+                    b.Property<long>("ExpedienteConyugeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_conyuge_id");
 
                     b.Property<long>("RepresentantePersonaId")
                         .HasColumnType("bigint")
                         .HasColumnName("representante_persona_id");
+
+                    b.Property<string>("TipoPoderCodigo")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasDefaultValue("ESPECIAL")
+                        .HasColumnName("tipo_poder_codigo");
 
                     b.Property<DateOnly>("VigenteDesde")
                         .HasColumnType("date")
@@ -1893,19 +2457,26 @@ namespace Divorcios.Datos.Migraciones
                     b.HasKey("RepresentacionId")
                         .HasName("pk_representacion");
 
-                    b.HasIndex("CasoConyugeId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_representacion_caso_conyuge_id");
-
                     b.HasIndex("DocumentoPoderId")
                         .IsUnique()
                         .HasDatabaseName("ix_representacion_documento_poder_id");
+
+                    b.HasIndex("ExpedienteConyugeId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_representacion_expediente_conyuge_id")
+                        .HasFilter("estado_codigo = 'VIGENTE'");
 
                     b.HasIndex("RepresentantePersonaId")
                         .HasDatabaseName("ix_representacion_representante_persona_id");
 
                     b.ToTable("representacion", "divorcios", t =>
                         {
+                            t.HasCheckConstraint("ck_representacion_estado", "estado_codigo IN (\r\n    'VIGENTE',\r\n    'REVOCADA',\r\n    'VENCIDA'\r\n)");
+
+                            t.HasCheckConstraint("ck_representacion_estado_cierre", "estado_codigo = 'VIGENTE'\r\nOR vigente_hasta IS NOT NULL");
+
+                            t.HasCheckConstraint("ck_representacion_tipo_poder", "tipo_poder_codigo = 'ESPECIAL'");
+
                             t.HasCheckConstraint("ck_representacion_vigencia", "vigente_hasta IS NULL\r\nOR vigente_hasta >= vigente_desde");
                         });
                 });
@@ -2002,6 +2573,25 @@ namespace Divorcios.Datos.Migraciones
                         });
                 });
 
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.RevisionDetalleDocumento", b =>
+                {
+                    b.Property<long>("RevisionDetalleId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("revision_detalle_id");
+
+                    b.Property<long>("DocumentoVersionId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("documento_version_id");
+
+                    b.HasKey("RevisionDetalleId", "DocumentoVersionId")
+                        .HasName("pk_revision_detalle_documento");
+
+                    b.HasIndex("DocumentoVersionId")
+                        .HasDatabaseName("ix_revision_detalle_documento_documento_version_id");
+
+                    b.ToTable("revision_detalle_documento", "divorcios");
+                });
+
             modelBuilder.Entity("Divorcios.Dominio.Entidades.RevisionPreregistro", b =>
                 {
                     b.Property<long>("RevisionPreregistroId")
@@ -2030,9 +2620,9 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("smallint")
                         .HasColumnName("numero_revision");
 
-                    b.Property<long>("PreregistroId")
+                    b.Property<long>("PreregistroVersionId")
                         .HasColumnType("bigint")
-                        .HasColumnName("preregistro_id");
+                        .HasColumnName("preregistro_version_id");
 
                     b.Property<string>("ResultadoCodigo")
                         .IsRequired()
@@ -2055,9 +2645,9 @@ namespace Divorcios.Datos.Migraciones
                     b.HasIndex("RevisadoPorUsuarioId")
                         .HasDatabaseName("ix_revision_preregistro_revisado_por_usuario_id");
 
-                    b.HasIndex("PreregistroId", "NumeroRevision")
+                    b.HasIndex("PreregistroVersionId", "NumeroRevision")
                         .IsUnique()
-                        .HasDatabaseName("ix_revision_preregistro_preregistro_id_numero_revision");
+                        .HasDatabaseName("ix_revision_preregistro_preregistro_version_id_numero_revision");
 
                     b.ToTable("revision_preregistro", "divorcios", t =>
                         {
@@ -2082,9 +2672,15 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("SolicitanteDisolucionId"));
 
-                    b.Property<long>("CasoConyugeId")
+                    b.Property<DateTime>("CreadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<long>("ExpedienteConyugeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("caso_conyuge_id");
+                        .HasColumnName("expediente_conyuge_id");
 
                     b.Property<string>("ModalidadCodigo")
                         .IsRequired()
@@ -2105,15 +2701,15 @@ namespace Divorcios.Datos.Migraciones
                     b.HasKey("SolicitanteDisolucionId")
                         .HasName("pk_solicitante_disolucion");
 
-                    b.HasIndex("CasoConyugeId")
-                        .HasDatabaseName("ix_solicitante_disolucion_caso_conyuge_id");
+                    b.HasIndex("ExpedienteConyugeId")
+                        .HasDatabaseName("ix_solicitante_disolucion_expediente_conyuge_id");
 
                     b.HasIndex("RepresentacionId")
                         .HasDatabaseName("ix_solicitante_disolucion_representacion_id");
 
-                    b.HasIndex("SolicitudDisolucionId", "CasoConyugeId")
+                    b.HasIndex("SolicitudDisolucionId", "ExpedienteConyugeId")
                         .IsUnique()
-                        .HasDatabaseName("ix_solicitante_disolucion_solicitud_disolucion_id_caso_conyuge");
+                        .HasDatabaseName("ix_solicitante_disolucion_solicitud_disolucion_id_expediente_c");
 
                     b.ToTable("solicitante_disolucion", "divorcios", t =>
                         {
@@ -2132,10 +2728,6 @@ namespace Divorcios.Datos.Migraciones
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("SolicitudDisolucionId"));
 
-                    b.Property<long>("CasoId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("caso_id");
-
                     b.Property<long>("DocumentoSolicitudId")
                         .HasColumnType("bigint")
                         .HasColumnName("documento_solicitud_id");
@@ -2147,6 +2739,10 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(20)")
                         .HasDefaultValue("PRESENTADA")
                         .HasColumnName("estado_codigo");
+
+                    b.Property<long>("ExpedienteId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("expediente_id");
 
                     b.Property<DateOnly>("FechaPresentacionMesaPartes")
                         .HasColumnType("date")
@@ -2178,16 +2774,16 @@ namespace Divorcios.Datos.Migraciones
                     b.HasKey("SolicitudDisolucionId")
                         .HasName("pk_solicitud_disolucion");
 
-                    b.HasIndex("CasoId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_solicitud_disolucion_caso_id");
-
                     b.HasIndex("DocumentoSolicitudId")
                         .IsUnique()
                         .HasDatabaseName("ix_solicitud_disolucion_documento_solicitud_id");
 
                     b.HasIndex("EstadoCodigo")
                         .HasDatabaseName("ix_solicitud_disolucion_estado_codigo");
+
+                    b.HasIndex("ExpedienteId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_solicitud_disolucion_expediente_id");
 
                     b.HasIndex("FechaPresentacionMesaPartes")
                         .HasDatabaseName("ix_solicitud_disolucion_fecha_presentacion_mesa_partes");
@@ -2303,6 +2899,10 @@ namespace Divorcios.Datos.Migraciones
                         .HasColumnType("character varying(20)")
                         .HasColumnName("rol_codigo");
 
+                    b.Property<DateTime?>("UltimoAccesoEn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("ultimo_acceso_en");
+
                     b.HasKey("UsuarioInternoId")
                         .HasName("pk_usuario_interno");
 
@@ -2372,13 +2972,6 @@ namespace Divorcios.Datos.Migraciones
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.ActuacionAdministrativa", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithMany("ActuacionesAdministrativas")
-                        .HasForeignKey("CasoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_actuacion_administrativa_casos_caso_id");
-
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "CreadaPorUsuario")
                         .WithMany("ActuacionesAdministrativasCreadas")
                         .HasForeignKey("CreadaPorUsuarioId")
@@ -2386,17 +2979,32 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_actuacion_administrativa_usuarios_internos_creada_por_usuar");
 
+                    b.HasOne("Divorcios.Dominio.Entidades.Documento", "Documento")
+                        .WithOne("ActuacionAdministrativa")
+                        .HasForeignKey("Divorcios.Dominio.Entidades.ActuacionAdministrativa", "DocumentoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_actuacion_administrativa_documentos_documento_id");
+
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "EmitidaPorUsuario")
                         .WithMany("ActuacionesAdministrativasEmitidas")
                         .HasForeignKey("EmitidaPorUsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_actuacion_administrativa_usuarios_internos_emitida_por_usua");
 
-                    b.Navigation("Caso");
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("ActuacionesAdministrativas")
+                        .HasForeignKey("ExpedienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_actuacion_administrativa_expedientes_expediente_id");
 
                     b.Navigation("CreadaPorUsuario");
 
+                    b.Navigation("Documento");
+
                     b.Navigation("EmitidaPorUsuario");
+
+                    b.Navigation("Expediente");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.AsistenciaAudiencia", b =>
@@ -2408,12 +3016,12 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_asistencia_audiencia_audiencias_ratificacion_audiencia_rati");
 
-                    b.HasOne("Divorcios.Dominio.Entidades.CasoConyuge", "CasoConyuge")
+                    b.HasOne("Divorcios.Dominio.Entidades.ExpedienteConyuge", "ExpedienteConyuge")
                         .WithMany("AsistenciasAudiencia")
-                        .HasForeignKey("CasoConyugeId")
+                        .HasForeignKey("ExpedienteConyugeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_asistencia_audiencia_casos_conyuges_caso_conyuge_id");
+                        .HasConstraintName("fk_asistencia_audiencia_expedientes_conyuges_expediente_conyug");
 
                     b.HasOne("Divorcios.Dominio.Entidades.Representacion", "Representacion")
                         .WithMany("AsistenciasAudiencia")
@@ -2423,20 +3031,13 @@ namespace Divorcios.Datos.Migraciones
 
                     b.Navigation("AudienciaRatificacion");
 
-                    b.Navigation("CasoConyuge");
+                    b.Navigation("ExpedienteConyuge");
 
                     b.Navigation("Representacion");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.AudienciaRatificacion", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithMany("AudienciasRatificacion")
-                        .HasForeignKey("CasoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_audiencia_ratificacion_casos_caso_id");
-
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "CreadaPorUsuario")
                         .WithMany("AudienciasCreadas")
                         .HasForeignKey("CreadaPorUsuarioId")
@@ -2444,41 +3045,16 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_audiencia_ratificacion_usuarios_internos_creada_por_usuario");
 
-                    b.Navigation("Caso");
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("AudienciasRatificacion")
+                        .HasForeignKey("ExpedienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_audiencia_ratificacion_expedientes_expediente_id");
 
                     b.Navigation("CreadaPorUsuario");
-                });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.Caso", b =>
-                {
-                    b.HasOne("Divorcios.Dominio.Entidades.CuentaCiudadana", "CreadoPorCuenta")
-                        .WithMany("CasosCreados")
-                        .HasForeignKey("CreadoPorCuentaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_caso_cuentas_ciudadanas_creado_por_cuenta_id");
-
-                    b.Navigation("CreadoPorCuenta");
-                });
-
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.CasoConyuge", b =>
-                {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithMany("Conyuges")
-                        .HasForeignKey("CasoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_caso_conyuge_caso_caso_id");
-
-                    b.HasOne("Divorcios.Dominio.Entidades.Persona", "Persona")
-                        .WithMany("CasosConyuge")
-                        .HasForeignKey("PersonaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_caso_conyuge_personas_persona_id");
-
-                    b.Navigation("Caso");
-
-                    b.Navigation("Persona");
+                    b.Navigation("Expediente");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.ConsultaReniec", b =>
@@ -2517,18 +3093,24 @@ namespace Divorcios.Datos.Migraciones
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.Documento", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.ActuacionAdministrativa", "ActuacionAdministrativa")
-                        .WithMany("Documentos")
-                        .HasForeignKey("ActuacionAdministrativaId")
+                    b.HasOne("Divorcios.Dominio.Entidades.CuentaCiudadana", "CreadoPorCuenta")
+                        .WithMany("DocumentosCreados")
+                        .HasForeignKey("CreadoPorCuentaId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_documento_actuacion_administrativa_actuacion_administrativa");
+                        .HasConstraintName("fk_documento_cuenta_ciudadana_creado_por_cuenta_id");
 
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
+                    b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "CreadoPorUsuario")
+                        .WithMany("DocumentosCreados")
+                        .HasForeignKey("CreadoPorUsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_documento_usuarios_internos_creado_por_usuario_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
                         .WithMany("Documentos")
-                        .HasForeignKey("CasoId")
+                        .HasForeignKey("ExpedienteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_documento_caso_caso_id");
+                        .HasConstraintName("fk_documento_expedientes_expediente_id");
 
                     b.HasOne("Divorcios.Dominio.Entidades.PreregistroRequisito", "PreregistroRequisito")
                         .WithMany("Documentos")
@@ -2543,9 +3125,11 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_documento_tipos_documento_tipo_documento_id");
 
-                    b.Navigation("ActuacionAdministrativa");
+                    b.Navigation("CreadoPorCuenta");
 
-                    b.Navigation("Caso");
+                    b.Navigation("CreadoPorUsuario");
+
+                    b.Navigation("Expediente");
 
                     b.Navigation("PreregistroRequisito");
 
@@ -2582,50 +3166,118 @@ namespace Divorcios.Datos.Migraciones
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.Expediente", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithOne("Expediente")
-                        .HasForeignKey("Divorcios.Dominio.Entidades.Expediente", "CasoId")
+                    b.HasOne("Divorcios.Dominio.Entidades.CuentaCiudadana", "CreadoPorCuenta")
+                        .WithMany("ExpedientesCreados")
+                        .HasForeignKey("CreadoPorCuentaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_expediente_cuenta_ciudadana_creado_por_cuenta_id");
+
+                    b.Navigation("CreadoPorCuenta");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.ExpedienteContactoHistorial", b =>
+                {
+                    b.HasOne("Divorcios.Dominio.Entidades.ExpedienteConyuge", "ExpedienteConyuge")
+                        .WithMany("ContactosHistorial")
+                        .HasForeignKey("ExpedienteConyugeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_expediente_caso_caso_id");
+                        .HasConstraintName("fk_expediente_contacto_historial_expedientes_conyuges_expedien");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.PreregistroVersion", "PreregistroVersionOrigen")
+                        .WithMany("ContactosExpedienteOriginados")
+                        .HasForeignKey("PreregistroVersionOrigenId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_expediente_contacto_historial_preregistros_versiones_prereg");
 
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "RegistradoPorUsuario")
-                        .WithMany("ExpedientesRegistrados")
+                        .WithMany("ContactosExpedienteRegistrados")
                         .HasForeignKey("RegistradoPorUsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_expediente_usuarios_internos_registrado_por_usuario_id");
+                        .HasConstraintName("fk_expediente_contacto_historial_usuarios_internos_registrado_");
 
-                    b.Navigation("Caso");
+                    b.Navigation("ExpedienteConyuge");
+
+                    b.Navigation("PreregistroVersionOrigen");
 
                     b.Navigation("RegistradoPorUsuario");
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.HistorialEstadoCaso", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.ExpedienteConyuge", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithMany("HistorialEstados")
-                        .HasForeignKey("CasoId")
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("Conyuges")
+                        .HasForeignKey("ExpedienteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_historial_estado_caso_caso_caso_id");
+                        .HasConstraintName("fk_expediente_conyuge_expediente_expediente_id");
 
-                    b.HasOne("Divorcios.Dominio.Entidades.EstadoCaso", "EstadoCaso")
-                        .WithMany("HistorialCasos")
-                        .HasForeignKey("EstadoCasoId")
+                    b.HasOne("Divorcios.Dominio.Entidades.Persona", "Persona")
+                        .WithMany("ParticipacionesExpediente")
+                        .HasForeignKey("PersonaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_historial_estado_caso_estado_caso_estado_caso_id");
+                        .HasConstraintName("fk_expediente_conyuge_personas_persona_id");
+
+                    b.Navigation("Expediente");
+
+                    b.Navigation("Persona");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.ExpedienteVersion", b =>
+                {
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("Versiones")
+                        .HasForeignKey("ExpedienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_expediente_version_expediente_expediente_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.PreregistroVersion", "PreregistroVersionOrigen")
+                        .WithMany("VersionesExpedienteOriginadas")
+                        .HasForeignKey("PreregistroVersionOrigenId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_expediente_version_preregistros_versiones_preregistro_versi");
 
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "RegistradoPorUsuario")
-                        .WithMany("EstadosCasoRegistrados")
+                        .WithMany("VersionesExpedienteRegistradas")
                         .HasForeignKey("RegistradoPorUsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_historial_estado_caso_usuarios_internos_registrado_por_usua");
+                        .IsRequired()
+                        .HasConstraintName("fk_expediente_version_usuarios_internos_registrado_por_usuario");
 
-                    b.Navigation("Caso");
+                    b.Navigation("Expediente");
 
-                    b.Navigation("EstadoCaso");
+                    b.Navigation("PreregistroVersionOrigen");
+
+                    b.Navigation("RegistradoPorUsuario");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.HistorialEstadoExpediente", b =>
+                {
+                    b.HasOne("Divorcios.Dominio.Entidades.EstadoExpediente", "EstadoExpediente")
+                        .WithMany("HistorialExpedientes")
+                        .HasForeignKey("EstadoExpedienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_historial_estado_expediente_estado_expediente_estado_expedi");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("HistorialEstados")
+                        .HasForeignKey("ExpedienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_historial_estado_expediente_expediente_expediente_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "RegistradoPorUsuario")
+                        .WithMany("EstadosExpedienteRegistrados")
+                        .HasForeignKey("RegistradoPorUsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_historial_estado_expediente_usuarios_internos_registrado_po");
+
+                    b.Navigation("EstadoExpediente");
+
+                    b.Navigation("Expediente");
 
                     b.Navigation("RegistradoPorUsuario");
                 });
@@ -2652,18 +3304,18 @@ namespace Divorcios.Datos.Migraciones
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.Notificacion", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithMany("Notificaciones")
-                        .HasForeignKey("CasoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_notificacion_caso_caso_id");
-
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "CreadaPorUsuario")
                         .WithMany("NotificacionesCreadas")
                         .HasForeignKey("CreadaPorUsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_notificacion_usuarios_internos_creada_por_usuario_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("Notificaciones")
+                        .HasForeignKey("ExpedienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_notificacion_expediente_expediente_id");
 
                     b.HasOne("Divorcios.Dominio.Entidades.Persona", "PersonaDestinataria")
                         .WithMany("NotificacionesRecibidas")
@@ -2672,9 +3324,9 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_notificacion_personas_persona_destinataria_id");
 
-                    b.Navigation("Caso");
-
                     b.Navigation("CreadaPorUsuario");
+
+                    b.Navigation("Expediente");
 
                     b.Navigation("PersonaDestinataria");
                 });
@@ -2699,7 +3351,6 @@ namespace Divorcios.Datos.Migraciones
                         .WithOne("Oficio")
                         .HasForeignKey("Divorcios.Dominio.Entidades.Oficio", "DocumentoOficioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
                         .HasConstraintName("fk_oficio_documento_documento_oficio_id");
 
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "RegistradoPorUsuario")
@@ -2718,92 +3369,101 @@ namespace Divorcios.Datos.Migraciones
                     b.Navigation("RegistradoPorUsuario");
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.PagoTramite", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.Pago", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithMany("Pagos")
-                        .HasForeignKey("CasoId")
+                    b.HasOne("Divorcios.Dominio.Entidades.Documento", "DocumentoComprobante")
+                        .WithOne("Pago")
+                        .HasForeignKey("Divorcios.Dominio.Entidades.Pago", "DocumentoComprobanteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_pago_documento_documento_comprobante_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.ExpedienteConyuge", "ExpedienteConyugePagante")
+                        .WithMany("PagosRealizados")
+                        .HasForeignKey("ExpedienteConyugePaganteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_pago_tramite_caso_caso_id");
+                        .HasConstraintName("fk_pago_expediente_conyuge_expediente_conyuge_pagante_id");
 
-                    b.HasOne("Divorcios.Dominio.Entidades.Documento", "DocumentoComprobante")
-                        .WithOne("PagoTramite")
-                        .HasForeignKey("Divorcios.Dominio.Entidades.PagoTramite", "DocumentoComprobanteId")
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("Pagos")
+                        .HasForeignKey("ExpedienteId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_pago_tramite_documento_documento_comprobante_id");
+                        .IsRequired()
+                        .HasConstraintName("fk_pago_expediente_expediente_id");
 
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "RegistradoPorUsuario")
                         .WithMany("PagosRegistrados")
                         .HasForeignKey("RegistradoPorUsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_pago_tramite_usuarios_internos_registrado_por_usuario_id");
-
-                    b.Navigation("Caso");
+                        .HasConstraintName("fk_pago_usuarios_internos_registrado_por_usuario_id");
 
                     b.Navigation("DocumentoComprobante");
+
+                    b.Navigation("Expediente");
+
+                    b.Navigation("ExpedienteConyugePagante");
 
                     b.Navigation("RegistradoPorUsuario");
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.PlazoCaso", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.PlazoExpediente", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithMany("Plazos")
-                        .HasForeignKey("CasoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_plazo_caso_caso_caso_id");
-
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "CreadoPorUsuario")
                         .WithMany("PlazosCreados")
                         .HasForeignKey("CreadoPorUsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_plazo_caso_usuarios_internos_creado_por_usuario_id");
+                        .HasConstraintName("fk_plazo_expediente_usuarios_internos_creado_por_usuario_id");
 
-                    b.HasOne("Divorcios.Dominio.Entidades.HistorialEstadoCaso", "HistorialEstadoCasoOrigen")
-                        .WithMany("PlazosOriginados")
-                        .HasForeignKey("HistorialEstadoCasoOrigenId")
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("Plazos")
+                        .HasForeignKey("ExpedienteId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_plazo_caso_historial_estado_caso_historial_estado_caso_orig");
+                        .IsRequired()
+                        .HasConstraintName("fk_plazo_expediente_expediente_expediente_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.HistorialEstadoExpediente", "HistorialEstadoExpedienteOrigen")
+                        .WithMany("PlazosOriginados")
+                        .HasForeignKey("HistorialEstadoExpedienteOrigenId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_plazo_expediente_historial_estado_expediente_historial_esta");
 
                     b.HasOne("Divorcios.Dominio.Entidades.ReglaPlazo", "ReglaPlazo")
                         .WithMany("Aplicaciones")
                         .HasForeignKey("ReglaPlazoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_plazo_caso_reglas_plazo_regla_plazo_id");
-
-                    b.Navigation("Caso");
+                        .HasConstraintName("fk_plazo_expediente_reglas_plazo_regla_plazo_id");
 
                     b.Navigation("CreadoPorUsuario");
 
-                    b.Navigation("HistorialEstadoCasoOrigen");
+                    b.Navigation("Expediente");
+
+                    b.Navigation("HistorialEstadoExpedienteOrigen");
 
                     b.Navigation("ReglaPlazo");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.Preregistro", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
                         .WithOne("Preregistro")
-                        .HasForeignKey("Divorcios.Dominio.Entidades.Preregistro", "CasoId")
+                        .HasForeignKey("Divorcios.Dominio.Entidades.Preregistro", "ExpedienteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_preregistro_caso_caso_id");
+                        .HasConstraintName("fk_preregistro_expediente_expediente_id");
 
-                    b.Navigation("Caso");
+                    b.Navigation("Expediente");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.PreregistroRequisito", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Preregistro", "Preregistro")
+                    b.HasOne("Divorcios.Dominio.Entidades.PreregistroVersion", "PreregistroVersion")
                         .WithMany("Requisitos")
-                        .HasForeignKey("PreregistroId")
+                        .HasForeignKey("PreregistroVersionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_preregistro_requisito_preregistro_preregistro_id");
+                        .HasConstraintName("fk_preregistro_requisito_preregistros_versiones_preregistro_ve");
 
                     b.HasOne("Divorcios.Dominio.Entidades.RequisitoCatalogo", "RequisitoCatalogo")
                         .WithMany("PrerregistrosRequisitos")
@@ -2812,24 +3472,66 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_preregistro_requisito_requisitos_catalogo_requisito_catalog");
 
-                    b.Navigation("Preregistro");
+                    b.Navigation("PreregistroVersion");
 
                     b.Navigation("RequisitoCatalogo");
                 });
 
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.PreregistroRequisitoDocumento", b =>
+                {
+                    b.HasOne("Divorcios.Dominio.Entidades.DocumentoVersion", "DocumentoVersion")
+                        .WithMany("PresentacionesPreregistro")
+                        .HasForeignKey("DocumentoVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_preregistro_requisito_documento_documento_version_documento");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.PreregistroRequisito", "PreregistroRequisito")
+                        .WithMany("ArchivosPresentados")
+                        .HasForeignKey("PreregistroRequisitoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_preregistro_requisito_documento_preregistro_requisito_prere");
+
+                    b.Navigation("DocumentoVersion");
+
+                    b.Navigation("PreregistroRequisito");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.PreregistroVersion", b =>
+                {
+                    b.HasOne("Divorcios.Dominio.Entidades.CuentaCiudadana", "CreadoPorCuenta")
+                        .WithMany("VersionesPreregistroCreadas")
+                        .HasForeignKey("CreadoPorCuentaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_preregistro_version_cuenta_ciudadana_creado_por_cuenta_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.Preregistro", "Preregistro")
+                        .WithMany("Versiones")
+                        .HasForeignKey("PreregistroId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_preregistro_version_preregistro_preregistro_id");
+
+                    b.Navigation("CreadoPorCuenta");
+
+                    b.Navigation("Preregistro");
+                });
+
             modelBuilder.Entity("Divorcios.Dominio.Entidades.RegistroAuditoria", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithMany("RegistrosAuditoria")
-                        .HasForeignKey("CasoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_registro_auditoria_caso_caso_id");
-
                     b.HasOne("Divorcios.Dominio.Entidades.CuentaCiudadana", "CuentaCiudadana")
                         .WithMany("RegistrosAuditoria")
                         .HasForeignKey("CuentaCiudadanaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_registro_auditoria_cuenta_ciudadana_cuenta_ciudadana_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithMany("RegistrosAuditoria")
+                        .HasForeignKey("ExpedienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_registro_auditoria_expediente_expediente_id");
 
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "UsuarioInterno")
                         .WithMany("RegistrosAuditoria")
@@ -2837,28 +3539,27 @@ namespace Divorcios.Datos.Migraciones
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_registro_auditoria_usuarios_internos_usuario_interno_id");
 
-                    b.Navigation("Caso");
-
                     b.Navigation("CuentaCiudadana");
+
+                    b.Navigation("Expediente");
 
                     b.Navigation("UsuarioInterno");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.Representacion", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.CasoConyuge", "CasoConyuge")
-                        .WithOne("Representacion")
-                        .HasForeignKey("Divorcios.Dominio.Entidades.Representacion", "CasoConyugeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_representacion_caso_conyuge_caso_conyuge_id");
-
                     b.HasOne("Divorcios.Dominio.Entidades.Documento", "DocumentoPoder")
                         .WithOne("RepresentacionPoder")
                         .HasForeignKey("Divorcios.Dominio.Entidades.Representacion", "DocumentoPoderId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
                         .HasConstraintName("fk_representacion_documento_documento_poder_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.ExpedienteConyuge", "ExpedienteConyuge")
+                        .WithMany("Representaciones")
+                        .HasForeignKey("ExpedienteConyugeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_representacion_expediente_conyuge_expediente_conyuge_id");
 
                     b.HasOne("Divorcios.Dominio.Entidades.Persona", "RepresentantePersona")
                         .WithMany("RepresentacionesComoApoderado")
@@ -2867,9 +3568,9 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_representacion_persona_representante_persona_id");
 
-                    b.Navigation("CasoConyuge");
-
                     b.Navigation("DocumentoPoder");
+
+                    b.Navigation("ExpedienteConyuge");
 
                     b.Navigation("RepresentantePersona");
                 });
@@ -2895,14 +3596,35 @@ namespace Divorcios.Datos.Migraciones
                     b.Navigation("RevisionPreregistro");
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.RevisionPreregistro", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.RevisionDetalleDocumento", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Preregistro", "Preregistro")
-                        .WithMany("Revisiones")
-                        .HasForeignKey("PreregistroId")
+                    b.HasOne("Divorcios.Dominio.Entidades.DocumentoVersion", "DocumentoVersion")
+                        .WithMany("Evaluaciones")
+                        .HasForeignKey("DocumentoVersionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_revision_preregistro_preregistro_preregistro_id");
+                        .HasConstraintName("fk_revision_detalle_documento_documento_version_documento_vers");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.RevisionDetalle", "RevisionDetalle")
+                        .WithMany("DocumentosEvaluados")
+                        .HasForeignKey("RevisionDetalleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_revision_detalle_documento_revision_detalle_revision_detall");
+
+                    b.Navigation("DocumentoVersion");
+
+                    b.Navigation("RevisionDetalle");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.RevisionPreregistro", b =>
+                {
+                    b.HasOne("Divorcios.Dominio.Entidades.PreregistroVersion", "PreregistroVersion")
+                        .WithMany("Revisiones")
+                        .HasForeignKey("PreregistroVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_revision_preregistro_preregistro_version_preregistro_versio");
 
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "RevisadoPorUsuario")
                         .WithMany("RevisionesPrerregistro")
@@ -2911,19 +3633,19 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_revision_preregistro_usuarios_internos_revisado_por_usuario");
 
-                    b.Navigation("Preregistro");
+                    b.Navigation("PreregistroVersion");
 
                     b.Navigation("RevisadoPorUsuario");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.SolicitanteDisolucion", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.CasoConyuge", "CasoConyuge")
+                    b.HasOne("Divorcios.Dominio.Entidades.ExpedienteConyuge", "ExpedienteConyuge")
                         .WithMany("SolicitudesDisolucionPresentadas")
-                        .HasForeignKey("CasoConyugeId")
+                        .HasForeignKey("ExpedienteConyugeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_solicitante_disolucion_caso_conyuge_caso_conyuge_id");
+                        .HasConstraintName("fk_solicitante_disolucion_expediente_conyuge_expediente_conyug");
 
                     b.HasOne("Divorcios.Dominio.Entidades.Representacion", "Representacion")
                         .WithMany("SolicitudesDisolucionPresentadas")
@@ -2938,7 +3660,7 @@ namespace Divorcios.Datos.Migraciones
                         .IsRequired()
                         .HasConstraintName("fk_solicitante_disolucion_solicitudes_disolucion_solicitud_dis");
 
-                    b.Navigation("CasoConyuge");
+                    b.Navigation("ExpedienteConyuge");
 
                     b.Navigation("Representacion");
 
@@ -2947,19 +3669,19 @@ namespace Divorcios.Datos.Migraciones
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.SolicitudDisolucion", b =>
                 {
-                    b.HasOne("Divorcios.Dominio.Entidades.Caso", "Caso")
-                        .WithOne("SolicitudDisolucion")
-                        .HasForeignKey("Divorcios.Dominio.Entidades.SolicitudDisolucion", "CasoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_solicitud_disolucion_caso_caso_id");
-
                     b.HasOne("Divorcios.Dominio.Entidades.Documento", "DocumentoSolicitud")
                         .WithOne("SolicitudDisolucion")
                         .HasForeignKey("Divorcios.Dominio.Entidades.SolicitudDisolucion", "DocumentoSolicitudId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_solicitud_disolucion_documento_documento_solicitud_id");
+
+                    b.HasOne("Divorcios.Dominio.Entidades.Expediente", "Expediente")
+                        .WithOne("SolicitudDisolucion")
+                        .HasForeignKey("Divorcios.Dominio.Entidades.SolicitudDisolucion", "ExpedienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_solicitud_disolucion_expediente_expediente_id");
 
                     b.HasOne("Divorcios.Dominio.Entidades.UsuarioInterno", "RegistradaPorUsuario")
                         .WithMany("SolicitudesDisolucionRegistradas")
@@ -2974,9 +3696,9 @@ namespace Divorcios.Datos.Migraciones
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_solicitud_disolucion_usuarios_internos_validada_por_usuario");
 
-                    b.Navigation("Caso");
-
                     b.Navigation("DocumentoSolicitud");
+
+                    b.Navigation("Expediente");
 
                     b.Navigation("RegistradaPorUsuario");
 
@@ -2997,8 +3719,6 @@ namespace Divorcios.Datos.Migraciones
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.ActuacionAdministrativa", b =>
                 {
-                    b.Navigation("Documentos");
-
                     b.Navigation("Oficios");
                 });
 
@@ -3007,7 +3727,54 @@ namespace Divorcios.Datos.Migraciones
                     b.Navigation("Asistencias");
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.Caso", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.CuentaCiudadana", b =>
+                {
+                    b.Navigation("DocumentosCreados");
+
+                    b.Navigation("ExpedientesCreados");
+
+                    b.Navigation("RegistrosAuditoria");
+
+                    b.Navigation("ValidacionesIdentidad");
+
+                    b.Navigation("VersionesDocumentoCargadas");
+
+                    b.Navigation("VersionesPreregistroCreadas");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.DestinoOficio", b =>
+                {
+                    b.Navigation("Oficios");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.Documento", b =>
+                {
+                    b.Navigation("ActuacionAdministrativa");
+
+                    b.Navigation("Oficio");
+
+                    b.Navigation("Pago");
+
+                    b.Navigation("RepresentacionPoder");
+
+                    b.Navigation("SolicitudDisolucion");
+
+                    b.Navigation("Versiones");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.DocumentoVersion", b =>
+                {
+                    b.Navigation("Evaluaciones");
+
+                    b.Navigation("PresentacionesPreregistro");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.EstadoExpediente", b =>
+                {
+                    b.Navigation("HistorialExpedientes");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.Expediente", b =>
                 {
                     b.Navigation("ActuacionesAdministrativas");
 
@@ -3016,8 +3783,6 @@ namespace Divorcios.Datos.Migraciones
                     b.Navigation("Conyuges");
 
                     b.Navigation("Documentos");
-
-                    b.Navigation("Expediente");
 
                     b.Navigation("HistorialEstados");
 
@@ -3032,52 +3797,24 @@ namespace Divorcios.Datos.Migraciones
                     b.Navigation("RegistrosAuditoria");
 
                     b.Navigation("SolicitudDisolucion");
-                });
-
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.CasoConyuge", b =>
-                {
-                    b.Navigation("AsistenciasAudiencia");
-
-                    b.Navigation("Representacion");
-
-                    b.Navigation("SolicitudesDisolucionPresentadas");
-                });
-
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.CuentaCiudadana", b =>
-                {
-                    b.Navigation("CasosCreados");
-
-                    b.Navigation("RegistrosAuditoria");
-
-                    b.Navigation("ValidacionesIdentidad");
-
-                    b.Navigation("VersionesDocumentoCargadas");
-                });
-
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.DestinoOficio", b =>
-                {
-                    b.Navigation("Oficios");
-                });
-
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.Documento", b =>
-                {
-                    b.Navigation("Oficio");
-
-                    b.Navigation("PagoTramite");
-
-                    b.Navigation("RepresentacionPoder");
-
-                    b.Navigation("SolicitudDisolucion");
 
                     b.Navigation("Versiones");
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.EstadoCaso", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.ExpedienteConyuge", b =>
                 {
-                    b.Navigation("HistorialCasos");
+                    b.Navigation("AsistenciasAudiencia");
+
+                    b.Navigation("ContactosHistorial");
+
+                    b.Navigation("PagosRealizados");
+
+                    b.Navigation("Representaciones");
+
+                    b.Navigation("SolicitudesDisolucionPresentadas");
                 });
 
-            modelBuilder.Entity("Divorcios.Dominio.Entidades.HistorialEstadoCaso", b =>
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.HistorialEstadoExpediente", b =>
                 {
                     b.Navigation("PlazosOriginados");
                 });
@@ -3089,29 +3826,40 @@ namespace Divorcios.Datos.Migraciones
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.Persona", b =>
                 {
-                    b.Navigation("CasosConyuge");
-
                     b.Navigation("ConsultasReniec");
 
                     b.Navigation("CuentaCiudadana");
 
                     b.Navigation("NotificacionesRecibidas");
 
+                    b.Navigation("ParticipacionesExpediente");
+
                     b.Navigation("RepresentacionesComoApoderado");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.Preregistro", b =>
                 {
-                    b.Navigation("Requisitos");
-
-                    b.Navigation("Revisiones");
+                    b.Navigation("Versiones");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.PreregistroRequisito", b =>
                 {
+                    b.Navigation("ArchivosPresentados");
+
                     b.Navigation("DetallesRevision");
 
                     b.Navigation("Documentos");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.PreregistroVersion", b =>
+                {
+                    b.Navigation("ContactosExpedienteOriginados");
+
+                    b.Navigation("Requisitos");
+
+                    b.Navigation("Revisiones");
+
+                    b.Navigation("VersionesExpedienteOriginadas");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.ReglaPlazo", b =>
@@ -3129,6 +3877,11 @@ namespace Divorcios.Datos.Migraciones
             modelBuilder.Entity("Divorcios.Dominio.Entidades.RequisitoCatalogo", b =>
                 {
                     b.Navigation("PrerregistrosRequisitos");
+                });
+
+            modelBuilder.Entity("Divorcios.Dominio.Entidades.RevisionDetalle", b =>
+                {
+                    b.Navigation("DocumentosEvaluados");
                 });
 
             modelBuilder.Entity("Divorcios.Dominio.Entidades.RevisionPreregistro", b =>
@@ -3154,11 +3907,13 @@ namespace Divorcios.Datos.Migraciones
 
                     b.Navigation("AudienciasCreadas");
 
+                    b.Navigation("ContactosExpedienteRegistrados");
+
                     b.Navigation("DiasNoLaborablesRegistrados");
 
-                    b.Navigation("EstadosCasoRegistrados");
+                    b.Navigation("DocumentosCreados");
 
-                    b.Navigation("ExpedientesRegistrados");
+                    b.Navigation("EstadosExpedienteRegistrados");
 
                     b.Navigation("IntentosNotificacionEjecutados");
 
@@ -3179,6 +3934,8 @@ namespace Divorcios.Datos.Migraciones
                     b.Navigation("SolicitudesDisolucionValidadas");
 
                     b.Navigation("VersionesDocumentoCargadas");
+
+                    b.Navigation("VersionesExpedienteRegistradas");
                 });
 #pragma warning restore 612, 618
         }

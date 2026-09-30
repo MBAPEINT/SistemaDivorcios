@@ -49,14 +49,18 @@ namespace Divorcios.Datos.Configuraciones
                 .HasDefaultValue("DIRECTA")
                 .IsRequired();
 
+            builder.Property(x => x.CreadoEn)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .IsRequired();
+
             builder.HasIndex(x => new
             {
                 x.SolicitudDisolucionId,
-                x.CasoConyugeId
+                x.ExpedienteConyugeId
             })
                 .IsUnique();
 
-            builder.HasIndex(x => x.CasoConyugeId);
+            builder.HasIndex(x => x.ExpedienteConyugeId);
 
             builder.HasIndex(x => x.RepresentacionId);
 
@@ -65,9 +69,9 @@ namespace Divorcios.Datos.Configuraciones
                 .HasForeignKey(x => x.SolicitudDisolucionId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.CasoConyuge)
+            builder.HasOne(x => x.ExpedienteConyuge)
                 .WithMany(x => x.SolicitudesDisolucionPresentadas)
-                .HasForeignKey(x => x.CasoConyugeId)
+                .HasForeignKey(x => x.ExpedienteConyugeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.Representacion)

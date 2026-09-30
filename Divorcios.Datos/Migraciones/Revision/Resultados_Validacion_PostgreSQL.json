@@ -1,0 +1,87 @@
+{
+  "cadena": {
+    "postgresql": "17.11",
+    "migraciones": [
+      "20260917220610_InicialIdentidadCaso",
+      "20260917224116_AgregarCatalogosBase",
+      "20260917224634_AgregarCacheReniec",
+      "20260917231311_AgregarPrerregistroDocumentos",
+      "20260917232101_AgregarRevisionesPrerregistro",
+      "20260917232641_AgregarRepresentacion",
+      "20260917233019_AgregarExpediente",
+      "20260917233806_AgregarHistorialEstadosCaso",
+      "20260917235017_AgregarPlazosCaso",
+      "20260917235902_AgregarAudienciasRatificacion",
+      "20260918001512_AgregarSolicitudDisolucion",
+      "20260918003114_AgregarActuacionesAdministrativas",
+      "20260918003621_AgregarOficios",
+      "20260918004120_AgregarPagosTramite",
+      "20260918004633_AgregarNotificaciones",
+      "20260918005010_AgregarDiasNoLaborables",
+      "20260918005514_AgregarRegistroAuditoria",
+      "20260930155844_CerrarModeloExpedientesYRespuestasVersionadas"
+    ],
+    "comparacion_modelo": true,
+    "tablas": 37,
+    "columnas": 358,
+    "restricciones": 278,
+    "indices": 159,
+    "hash_esquema": "a3216223cdd8a259e452c6672db4e902e2e703885c81bfebad5973246cc7ea8f"
+  },
+  "bloqueo": [
+    {
+      "base": "catalogo_con_datos",
+      "tabla": "requisito_catalogo",
+      "filas_fixture": 1,
+      "rechazado": true,
+      "historial_antes_despues": 17,
+      "esquema_antes_despues": "2765dbdeb4775faffa102a05633e664748b393f17a1f4b2ce84e73590ebfb7f2",
+      "conteos_e_historial_intactos": true,
+      "error": "psql:/tmp/cierre_final.sql:28: ERROR:  Migracion de revision detenida: divorcios.requisito_catalogo contiene datos. Preparar una conversion que los conserve.\nCONTEXT:  PL/pgSQL function inline_code_block line 21 at RAISE"
+    },
+    {
+      "base": "operaciones_con_datos",
+      "tabla": "persona",
+      "filas_fixture": 1,
+      "rechazado": true,
+      "historial_antes_despues": 17,
+      "esquema_antes_despues": "2765dbdeb4775faffa102a05633e664748b393f17a1f4b2ce84e73590ebfb7f2",
+      "conteos_e_historial_intactos": true,
+      "error": "psql:/tmp/cierre_final.sql:28: ERROR:  Migracion de revision detenida: divorcios.persona contiene datos. Preparar una conversion que los conserve.\nCONTEXT:  PL/pgSQL function inline_code_block line 21 at RAISE"
+    }
+  ],
+  "bloqueo_down": {
+    "rechazado": true,
+    "tabla": "requisito_catalogo",
+    "filas_fixture": 1,
+    "migraciones_intactas": 18,
+    "esquema_intacto": true,
+    "error": "psql:/tmp/rollback.sql:28: ERROR:  Migracion de revision detenida: divorcios.requisito_catalogo contiene datos. Preparar una conversion que los conserve.\nCONTEXT:  PL/pgSQL function inline_code_block line 21 at RAISE"
+  },
+  "desarrollo": {
+    "auditoria": {
+      "base": "divorcios_db",
+      "version_postgresql": "17.11",
+      "solo_lectura": "on",
+      "historial_migraciones_presente": false,
+      "tablas": []
+    },
+    "igual_antes_despues": true,
+    "origen": "Base local nueva creada por autorizacion del usuario; la base de la otra PC no fue accesible ni auditada."
+  },
+  "aislamiento": {
+    "NetworkMode": "none",
+    "Tmpfs": {
+      "/var/lib/postgresql/data": "rw"
+    },
+    "Binds": null,
+    "PortBindings": {},
+    "contenedor_temporal_retirado": true
+  },
+  "sql_sha256": "9abc8c0ab6091f6801ac0055a696466b08c224ce0a8b7fdde4d593eef49f852b",
+  "correcciones_migracion": [
+    "Sin DEFAULT 0 en actuacion_administrativa.numero_secuencia",
+    "Sin DEFAULT cadena vacia en expediente.codigo_preregistro",
+    "Sin DEFAULT cadena vacia en regla_plazo.evento_inicio_codigo"
+  ]
+}

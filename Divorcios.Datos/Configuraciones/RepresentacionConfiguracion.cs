@@ -16,10 +16,31 @@ namespace Divorcios.Datos.Configuraciones
                 tabla =>
                 {
                     tabla.HasCheckConstraint(
+                        "ck_representacion_tipo_poder",
+                        "tipo_poder_codigo = 'ESPECIAL'");
+
+                    tabla.HasCheckConstraint(
+                        "ck_representacion_estado",
+                        """
+                        estado_codigo IN (
+                            'VIGENTE',
+                            'REVOCADA',
+                            'VENCIDA'
+                        )
+                        """);
+
+                    tabla.HasCheckConstraint(
                         "ck_representacion_vigencia",
                         """
                         vigente_hasta IS NULL
                         OR vigente_hasta >= vigente_desde
+                        """);
+
+                    tabla.HasCheckConstraint(
+                        "ck_representacion_estado_cierre",
+                        """
+                        estado_codigo = 'VIGENTE'
+                        OR vigente_hasta IS NOT NULL
                         """);
                 });
 
@@ -27,6 +48,16 @@ namespace Divorcios.Datos.Configuraciones
 
             builder.Property(x => x.RepresentacionId)
                 .UseIdentityAlwaysColumn();
+
+            builder.Property(x => x.TipoPoderCodigo)
+                .HasMaxLength(30)
+                .HasDefaultValue("ESPECIAL")
+                .IsRequired();
+
+            builder.Property(x => x.EstadoCodigo)
+                .HasMaxLength(20)
+                .HasDefaultValue("VIGENTE")
+                .IsRequired();
 
             builder.Property(x => x.VigenteDesde)
                 .HasColumnType("date")
@@ -39,18 +70,18 @@ namespace Divorcios.Datos.Configuraciones
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .IsRequired();
 
-            builder.HasIndex(x => x.CasoConyugeId)
-                .IsUnique();
+            builder.HasIndex(x => x.ExpedienteConyugeId)
+                .IsUnique()
+                .HasFilter("estado_codigo = 'VIGENTE'");
 
             builder.HasIndex(x => x.DocumentoPoderId)
                 .IsUnique();
 
             builder.HasIndex(x => x.RepresentantePersonaId);
 
-            builder.HasOne(x => x.CasoConyuge)
-                .WithOne(x => x.Representacion)
-                .HasForeignKey<Representacion>(
-                    x => x.CasoConyugeId)
+            builder.HasOne(x => x.ExpedienteConyuge)
+                .WithMany(x => x.Representaciones)
+                .HasForeignKey(x => x.ExpedienteConyugeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.RepresentantePersona)

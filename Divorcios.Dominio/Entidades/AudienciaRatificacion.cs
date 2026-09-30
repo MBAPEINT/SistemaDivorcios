@@ -7,7 +7,7 @@ namespace Divorcios.Dominio.Entidades
     public class AudienciaRatificacion
     {
         public long AudienciaRatificacionId { get; set; }
-        public long CasoId { get; set; }
+        public long ExpedienteId { get; set; }
         public short NumeroProgramacion { get; set; }
         public DateTime FechaHoraProgramada { get; set; }
         public string EstadoCodigo { get; set; } = "PROGRAMADA";
@@ -16,7 +16,7 @@ namespace Divorcios.Dominio.Entidades
         public long CreadaPorUsuarioId { get; set; }
         public DateTime CreadaEn { get; set; } = DateTime.UtcNow;
         public string? Observacion { get; set; }
-        public Caso Caso { get; set; } = null!;
+        public Expediente Expediente { get; set; } = null!;
         public UsuarioInterno CreadaPorUsuario { get; set; } = null!;
         public ICollection<AsistenciaAudiencia> Asistencias { get; set; }
             = new List<AsistenciaAudiencia>();

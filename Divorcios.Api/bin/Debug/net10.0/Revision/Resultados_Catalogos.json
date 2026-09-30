@@ -1,0 +1,254 @@
+{
+  "fecha": "2026-09-30",
+  "base_http": "http://localhost:5151",
+  "openapi": "3.1.1",
+  "operaciones_get": 12,
+  "solicitudes_get_verificadas": 59,
+  "resultados": [
+    {
+      "ruta": "/openapi/v1.json",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente?activo=true",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente?activo=false",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente/1",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente/0",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente/-1",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente/32768",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente?activo=pendiente",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/estados-expediente/abc",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento?activo=true",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento?activo=false",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento/1",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento/0",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento/-1",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento/32768",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento?activo=pendiente",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/tipos-documento/abc",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/requisitos",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/requisitos?activo=true",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/requisitos?activo=false",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/requisitos/1",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/requisitos/0",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/requisitos/-1",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/requisitos/32768",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/requisitos?activo=pendiente",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/requisitos/abc",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio?activo=true",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio?activo=false",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio/1",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio/0",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio/-1",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio/32768",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio?activo=pendiente",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/destinos-oficio/abc",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo?activo=true",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo?activo=false",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo/1",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo/0",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo/-1",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo/32768",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo?activo=pendiente",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/reglas-plazo/abc",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables?activo=true",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables?activo=false",
+      "estado": 200
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables/1",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables/0",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables/-1",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables/2147483648",
+      "estado": 404
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables?activo=pendiente",
+      "estado": 400
+    },
+    {
+      "ruta": "/api/catalogos/dias-no-laborables/abc",
+      "estado": 404
+    },
+    {
+      "ruta": "/swagger/index.html",
+      "estado": 200
+    },
+    {
+      "ruta": "/swagger/index.js",
+      "estado": 200
+    },
+    {
+      "ruta": "/swagger/swagger-ui-bundle.js",
+      "estado": 200
+    },
+    {
+      "ruta": "/swagger/swagger-ui.css",
+      "estado": 200
+    }
+  ],
+  "esquema_local_igual_referencia": true,
+  "conteos_esquema": {
+    "tablas": 37,
+    "columnas": 358,
+    "restricciones": 278,
+    "indices": 159
+  },
+  "datos_prueba_cargados": false,
+  "limite": "Sin filas: no se probó respuesta de detalle 200 ni filtrado/ordenación de registros existentes."
+}

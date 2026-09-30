@@ -15,22 +15,44 @@ namespace Divorcios.Datos.Configuraciones
                 tabla =>
                 {
                     tabla.HasCheckConstraint(
-                        "ck_regla_cantidad",
+                        "ck_regla_plazo_cantidad",
                         "cantidad > 0");
 
                     tabla.HasCheckConstraint(
-                        "ck_regla_unidad",
+                        "ck_regla_plazo_unidad",
                         "unidad_codigo IN ('DIA', 'MES')");
 
                     tabla.HasCheckConstraint(
-                        "ck_regla_tipo_dia",
-                        "tipo_dia_codigo IN " +
-                        "('CALENDARIO', 'HABIL', 'OPERATIVO')");
+                        "ck_regla_plazo_tipo_dia",
+                        """
+                        tipo_dia_codigo IN (
+                            'CALENDARIO',
+                            'HABIL',
+                            'OPERATIVO'
+                        )
+                        """);
 
                     tabla.HasCheckConstraint(
-                        "ck_regla_vigencia",
-                        "vigente_hasta IS NULL " +
-                        "OR vigente_hasta >= vigente_desde");
+                        "ck_regla_plazo_evento_inicio",
+                        "btrim(evento_inicio_codigo) <> ''");
+
+                    tabla.HasCheckConstraint(
+                        "ck_regla_plazo_vigencia",
+                        """
+                        vigente_hasta IS NULL
+                        OR vigente_hasta >= vigente_desde
+                        """);
+
+                    tabla.HasCheckConstraint(
+                        "ck_regla_plazo_descripcion",
+                        """
+                        descripcion IS NULL
+                        OR btrim(descripcion) <> ''
+                        """);
+
+                    tabla.HasCheckConstraint(
+                        "ck_regla_plazo_fuente",
+                        "btrim(fuente) <> ''");
                 });
 
             builder.HasKey(x => x.ReglaPlazoId);
@@ -39,22 +61,29 @@ namespace Divorcios.Datos.Configuraciones
                 .UseIdentityAlwaysColumn();
 
             builder.Property(x => x.Codigo)
-                .HasMaxLength(45)
+                .HasMaxLength(50)
                 .IsRequired();
 
             builder.Property(x => x.Nombre)
-                .HasMaxLength(180)
+                .HasMaxLength(160)
                 .IsRequired();
+
+            builder.Property(x => x.Descripcion)
+                .HasMaxLength(1000);
 
             builder.Property(x => x.Cantidad)
                 .IsRequired();
 
             builder.Property(x => x.UnidadCodigo)
-                .HasMaxLength(12)
+                .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(x => x.TipoDiaCodigo)
-                .HasMaxLength(12)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            builder.Property(x => x.EventoInicioCodigo)
+                .HasMaxLength(50)
                 .IsRequired();
 
             builder.Property(x => x.VigenteDesde)
@@ -65,7 +94,11 @@ namespace Divorcios.Datos.Configuraciones
                 .HasColumnType("date");
 
             builder.Property(x => x.Fuente)
-                .HasMaxLength(180)
+                .HasMaxLength(250)
+                .IsRequired();
+
+            builder.Property(x => x.Activo)
+                .HasDefaultValue(true)
                 .IsRequired();
 
             builder.HasIndex(x => new
@@ -74,6 +107,12 @@ namespace Divorcios.Datos.Configuraciones
                 x.VigenteDesde
             })
                 .IsUnique();
+
+            builder.HasIndex(x => new
+            {
+                x.Activo,
+                x.EventoInicioCodigo
+            });
         }
     }
 }

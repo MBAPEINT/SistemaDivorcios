@@ -41,9 +41,9 @@ namespace Divorcios.Datos.Configuraciones
                     tabla.HasCheckConstraint(
                         "ck_asistencia_ratificacion",
                         """
-                        ratifico_voluntad = FALSE
+                        ratifico_voluntad IS NULL
                         OR (
-                            asistio = TRUE
+                            asistio IS TRUE
                             AND identidad_verificada_en IS NOT NULL
                         )
                         """);
@@ -52,15 +52,15 @@ namespace Divorcios.Datos.Configuraciones
                         "ck_asistencia_verificacion",
                         """
                         identidad_verificada_en IS NULL
-                        OR asistio = TRUE
+                        OR asistio IS TRUE
                         """);
 
                     tabla.HasCheckConstraint(
                         "ck_asistencia_inasistencia",
                         """
-                        asistio = TRUE
+                        asistio IS TRUE
                         OR (
-                            ratifico_voluntad = FALSE
+                            ratifico_voluntad IS NULL
                             AND identidad_verificada_en IS NULL
                         )
                         """);
@@ -87,9 +87,7 @@ namespace Divorcios.Datos.Configuraciones
                 .HasDefaultValue(false)
                 .IsRequired();
 
-            builder.Property(x => x.RatificoVoluntad)
-                .HasDefaultValue(false)
-                .IsRequired();
+            builder.Property(x => x.RatificoVoluntad);
 
             builder.Property(x => x.IdentidadVerificadaEn);
 
@@ -99,11 +97,11 @@ namespace Divorcios.Datos.Configuraciones
             builder.HasIndex(x => new
             {
                 x.AudienciaRatificacionId,
-                x.CasoConyugeId
+                x.ExpedienteConyugeId
             })
                 .IsUnique();
 
-            builder.HasIndex(x => x.CasoConyugeId);
+            builder.HasIndex(x => x.ExpedienteConyugeId);
 
             builder.HasIndex(x => x.RepresentacionId);
 
@@ -112,9 +110,9 @@ namespace Divorcios.Datos.Configuraciones
                 .HasForeignKey(x => x.AudienciaRatificacionId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.CasoConyuge)
+            builder.HasOne(x => x.ExpedienteConyuge)
                 .WithMany(x => x.AsistenciasAudiencia)
-                .HasForeignKey(x => x.CasoConyugeId)
+                .HasForeignKey(x => x.ExpedienteConyugeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.Representacion)

@@ -29,6 +29,27 @@ namespace Divorcios.Datos.Configuraciones
                 tabla.HasCheckConstraint(
                     "ck_persona_apellido_materno",
                     "btrim(apellido_materno) <> ''");
+
+                tabla.HasCheckConstraint(
+                    "ck_persona_verificacion_reniec",
+                    """
+                    (
+                        verificado_reniec = FALSE
+                        AND verificado_reniec_en IS NULL
+                    )
+                    OR
+                    (
+                        verificado_reniec = TRUE
+                        AND verificado_reniec_en IS NOT NULL
+                    )
+                    """);
+
+                tabla.HasCheckConstraint(
+                    "ck_persona_actualizacion",
+                    """
+                    actualizado_en IS NULL
+                    OR actualizado_en >= creado_en
+                    """);
             });
 
             builder.HasKey(x => x.PersonaId);
@@ -55,8 +76,6 @@ namespace Divorcios.Datos.Configuraciones
                 .HasMaxLength(80)
                 .IsRequired();
 
-            builder.Property(x => x.VerificadoReniecEn);
-
             builder.Property(x => x.Celular)
                 .HasMaxLength(15);
 
@@ -69,6 +88,13 @@ namespace Divorcios.Datos.Configuraciones
             builder.Property(x => x.CreadoEn)
                 .HasDefaultValueSql("now()")
                 .IsRequired();
+            builder.Property(x => x.VerificadoReniec)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            builder.Property(x => x.VerificadoReniecEn);
+
+            builder.Property(x => x.ActualizadoEn);
         }
     }
 }

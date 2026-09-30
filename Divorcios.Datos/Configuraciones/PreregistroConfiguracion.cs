@@ -15,16 +15,23 @@ namespace Divorcios.Datos.Configuraciones
                 tabla =>
                 {
                     tabla.HasCheckConstraint(
-                        "ck_preregistro_hijos_menores",
-                        "cantidad_hijos_menores >= 0");
-
-                    tabla.HasCheckConstraint(
-                        "ck_preregistro_hijos_mayores_incapaces",
-                        "cantidad_hijos_mayores_incapaces >= 0");
+                        "ck_preregistro_estado",
+                        """
+                        estado_codigo IN (
+                            'BORRADOR',
+                            'ENVIADO',
+                            'OBSERVADO',
+                            'APROBADO',
+                            'CANCELADO'
+                        )
+                        """);
 
                     tabla.HasCheckConstraint(
                         "ck_preregistro_envio",
-                        "enviado_en IS NULL OR enviado_en >= creado_en");
+                        """
+                        enviado_en IS NULL
+                        OR enviado_en >= creado_en
+                        """);
 
                     tabla.HasCheckConstraint(
                         "ck_preregistro_aprobacion",
@@ -35,6 +42,16 @@ namespace Divorcios.Datos.Configuraciones
                             AND aprobado_en >= enviado_en
                         )
                         """);
+
+                    tabla.HasCheckConstraint(
+                        "ck_preregistro_bloqueo",
+                        """
+                        bloqueado_en IS NULL
+                        OR (
+                            aprobado_en IS NOT NULL
+                            AND bloqueado_en >= aprobado_en
+                        )
+                        """);
                 });
 
             builder.HasKey(x => x.PreregistroId);
@@ -42,42 +59,27 @@ namespace Divorcios.Datos.Configuraciones
             builder.Property(x => x.PreregistroId)
                 .UseIdentityAlwaysColumn();
 
-            builder.Property(x => x.FechaMatrimonio)
-                .HasColumnType("date")
+            builder.Property(x => x.EstadoCodigo)
+                .HasMaxLength(20)
+                .HasDefaultValue("BORRADOR")
                 .IsRequired();
-
-            builder.Property(x => x.MatrimonioEnPorvenir)
-                .IsRequired();
-
-            builder.Property(x => x.UltimoDomicilioConyugalEnPorvenir)
-                .IsRequired();
-
-            builder.Property(x => x.MutuoAcuerdoDeclarado)
-                .IsRequired();
-
-            builder.Property(x => x.CantidadHijosMenores)
-                .HasDefaultValue((short)0)
-                .IsRequired();
-
-            builder.Property(x => x.CantidadHijosMayoresIncapaces)
-                .HasDefaultValue((short)0)
-                .IsRequired();
-
-            builder.Property(x => x.TieneBienesSociales)
-                .HasDefaultValue(false)
-                .IsRequired();
-
-            builder.Property(x => x.EnviadoEn);
-
-            builder.Property(x => x.AprobadoEn);
 
             builder.Property(x => x.CreadoEn)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .IsRequired();
 
-            builder.HasOne(x => x.Caso)
+            builder.Property(x => x.EnviadoEn);
+            builder.Property(x => x.AprobadoEn);
+            builder.Property(x => x.BloqueadoEn);
+
+            builder.HasIndex(x => x.ExpedienteId)
+                .IsUnique();
+
+            builder.HasIndex(x => x.EstadoCodigo);
+
+            builder.HasOne(x => x.Expediente)
                 .WithOne(x => x.Preregistro)
-                .HasForeignKey<Preregistro>(x => x.CasoId)
+                .HasForeignKey<Preregistro>(x => x.ExpedienteId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
