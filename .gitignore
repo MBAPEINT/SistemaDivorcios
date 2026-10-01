@@ -1,4 +1,33 @@
+# Visual Studio y configuracion personal del IDE.
 .vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.pubxml.user
+
+# Salidas de compilacion, restauracion y publicacion de .NET.
+[Bb][Ii][Nn]/
+[Oo][Bb][Jj]/
+[Pp]ublish/
+[Aa]rtifacts/
+*.binlog
+*.nupkg
+*.snupkg
+
+# Resultados generados por pruebas.
+[Tt]est[Rr]esults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Archivos temporales y logs generados.
+~$*
+*.tmp
+*.temp
+*.log
+
+# Informes locales de revision de la API.
 /Divorcios.Api/Revision/
 
 # Documentacion local: publicar solamente el README de la raiz.
