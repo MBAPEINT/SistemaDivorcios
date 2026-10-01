@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Divorcios.Api.Controllers
 {
     [ApiController]
+
+    
     [Route("api/catalogos")]
     [Tags("Catálogos")]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
