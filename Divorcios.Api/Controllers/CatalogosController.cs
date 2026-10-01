@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Divorcios.Negocio.DTOs.Catalogos;
 using Divorcios.Negocio.Interfaces;
+using Divorcios.Negocio.Excepciones;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Divorcios.Api.Controllers
@@ -55,6 +56,34 @@ namespace Divorcios.Api.Controllers
             return registro is null
                 ? Problem(statusCode: StatusCodes.Status404NotFound, title: "Registro de catálogo no encontrado.")
                 : Ok(registro);
+        }
+
+        [HttpPost("tipos-documento")]
+        [EndpointSummary("Crear un tipo de documento")]
+        [ProducesResponseType<TipoDocumentoDto>(StatusCodes.Status201Created, "application/json")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict, "application/problem+json")]
+        public async Task<ActionResult<TipoDocumentoDto>> CrearTipoDocumento(
+            [FromBody] CrearTipoDocumentoDto datos, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var creado = await servicio.CrearTipoDocumentoAsync(datos, cancellationToken);
+                return CreatedAtAction(
+                    nameof(ObtenerTipoDocumento), 
+                    new { id = creado.TipoDocumentoId }, creado);
+            }
+            catch (ConflictoNegocioException excepcion)
+            {
+                return Problem(
+                    statusCode: StatusCodes.Status409Conflict, 
+                    title: "No se pudo crear el registro de catálogo.",
+                    detail: excepcion.Message);
+            }
+            catch (ValidationException excepcion)
+            {
+                ModelState.AddModelError(string.Empty, excepcion.Message);
+                return ValidationProblem(ModelState);
+            }
         }
 
         [HttpGet("requisitos")]

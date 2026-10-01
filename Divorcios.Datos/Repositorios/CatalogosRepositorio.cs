@@ -1,3 +1,5 @@
+using Npgsql;
+using Divorcios.Datos.Excepciones;
 using Divorcios.Datos.Contexto;
 using Divorcios.Datos.Interfaces;
 using Divorcios.Dominio.Entidades;
@@ -37,6 +39,36 @@ namespace Divorcios.Datos.Repositorios
         {
             return contexto.TiposDocumento.AsNoTracking()
                 .SingleOrDefaultAsync(x => x.TipoDocumentoId == id, cancellationToken);
+        }
+
+        public Task<bool> ExisteCodigoTipoDocumentoAsync(
+            string codigo, CancellationToken cancellationToken)
+        {
+            return contexto.TiposDocumento.AnyAsync(
+                x => x.Codigo == codigo,
+                cancellationToken);
+        }
+
+        public async Task<TipoDocumento> CrearTipoDocumentoAsync(
+            TipoDocumento tipoDocumento, CancellationToken cancellationToken)
+        {
+            contexto.TiposDocumento.Add(tipoDocumento);
+            try
+            {
+                await contexto.SaveChangesAsync(cancellationToken);
+                return tipoDocumento;
+            }
+            catch (DbUpdateException excepcion)
+                when (excepcion.InnerException is PostgresException error
+                    && error.SqlState == PostgresErrorCodes.UniqueViolation
+                    && error.ConstraintName == "ix_tipo_documento_codigo")
+            {
+                contexto.Entry(tipoDocumento).State = EntityState.Detached;
+
+                throw new CodigoDuplicadoPersistenciaException(
+                    "Ya existe un tipo de documento con ese código.",
+                    excepcion);
+            }
         }
 
         public async Task<IReadOnlyList<RequisitoCatalogo>> ListarRequisitosAsync(

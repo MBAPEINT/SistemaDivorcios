@@ -1,0 +1,512 @@
+[
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ListarDestinosOficio",
+    "RelativePath": "api/catalogos/destinos-oficio",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "activo",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Divorcios.Negocio.DTOs.Catalogos.DestinoOficioDto, Divorcios.Negocio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Description": "Sin activo devuelve todos; activo=true o false filtra por ese indicador. No eval\u00FAa vigencia ni aplicabilidad al tr\u00E1mite.",
+    "Summary": "Listar destinos oficio"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ObtenerDestinoOficio",
+    "RelativePath": "api/catalogos/destinos-oficio/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Divorcios.Negocio.DTOs.Catalogos.DestinoOficioDto",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 404
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Summary": "Consultar destinos oficio por identificador"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ListarDiasNoLaborables",
+    "RelativePath": "api/catalogos/dias-no-laborables",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "activo",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Divorcios.Negocio.DTOs.Catalogos.DiaNoLaborableDto, Divorcios.Negocio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Description": "Sin activo devuelve todos; activo=true o false filtra por ese indicador. No eval\u00FAa vigencia ni aplicabilidad al tr\u00E1mite.",
+    "Summary": "Listar dias no laborables"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ObtenerDiaNoLaborable",
+    "RelativePath": "api/catalogos/dias-no-laborables/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Divorcios.Negocio.DTOs.Catalogos.DiaNoLaborableDto",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 404
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Summary": "Consultar dias no laborables por identificador"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ListarEstadosExpediente",
+    "RelativePath": "api/catalogos/estados-expediente",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "activo",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Divorcios.Negocio.DTOs.Catalogos.EstadoExpedienteDto, Divorcios.Negocio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Description": "Sin activo devuelve todos; activo=true o false filtra por ese indicador. No eval\u00FAa vigencia ni aplicabilidad al tr\u00E1mite.",
+    "Summary": "Listar estados expediente"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ObtenerEstadoExpediente",
+    "RelativePath": "api/catalogos/estados-expediente/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Divorcios.Negocio.DTOs.Catalogos.EstadoExpedienteDto",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 404
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Summary": "Consultar estados expediente por identificador"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ListarReglasPlazo",
+    "RelativePath": "api/catalogos/reglas-plazo",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "activo",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Divorcios.Negocio.DTOs.Catalogos.ReglaPlazoDto, Divorcios.Negocio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Description": "Sin activo devuelve todos; activo=true o false filtra por ese indicador. No eval\u00FAa vigencia ni aplicabilidad al tr\u00E1mite.",
+    "Summary": "Listar reglas plazo"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ObtenerReglaPlazo",
+    "RelativePath": "api/catalogos/reglas-plazo/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Divorcios.Negocio.DTOs.Catalogos.ReglaPlazoDto",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 404
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Summary": "Consultar reglas plazo por identificador"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ListarRequisitos",
+    "RelativePath": "api/catalogos/requisitos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "activo",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Divorcios.Negocio.DTOs.Catalogos.RequisitoCatalogoDto, Divorcios.Negocio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Description": "Sin activo devuelve todos; activo=true o false filtra por ese indicador. No eval\u00FAa vigencia ni aplicabilidad al tr\u00E1mite.",
+    "Summary": "Listar requisitos"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ObtenerRequisitoCatalogo",
+    "RelativePath": "api/catalogos/requisitos/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Divorcios.Negocio.DTOs.Catalogos.RequisitoCatalogoDto",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 404
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Summary": "Consultar requisitos por identificador"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ListarTiposDocumento",
+    "RelativePath": "api/catalogos/tipos-documento",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "activo",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Divorcios.Negocio.DTOs.Catalogos.TipoDocumentoDto, Divorcios.Negocio, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Description": "Sin activo devuelve todos; activo=true o false filtra por ese indicador. No eval\u00FAa vigencia ni aplicabilidad al tr\u00E1mite.",
+    "Summary": "Listar tipos documento"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "CrearTipoDocumento",
+    "RelativePath": "api/catalogos/tipos-documento",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "datos",
+        "Type": "Divorcios.Negocio.DTOs.Catalogos.CrearTipoDocumentoDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Divorcios.Negocio.DTOs.Catalogos.TipoDocumentoDto",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 201
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 409
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Summary": "Crear un tipo de documento"
+  },
+  {
+    "ContainingType": "Divorcios.Api.Controllers.CatalogosController",
+    "Method": "ObtenerTipoDocumento",
+    "RelativePath": "api/catalogos/tipos-documento/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ValidationProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Divorcios.Negocio.DTOs.Catalogos.TipoDocumentoDto",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 404
+      }
+    ],
+    "Tags": [
+      "Cat\u00E1logos"
+    ],
+    "Summary": "Consultar tipos documento por identificador"
+  }
+]

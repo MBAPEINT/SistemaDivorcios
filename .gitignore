@@ -1,2 +1,7 @@
 .vs/
 /Divorcios.Api/Revision/
+
+# Documentacion local: publicar solamente el README de la raiz.
+*.[mM][dD]
+!/README.md
+/ENDPOINTS_PREREGISTRO.docx

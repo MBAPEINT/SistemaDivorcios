@@ -13,6 +13,10 @@ namespace Divorcios.Datos.Interfaces
             bool? activo, CancellationToken cancellationToken);
         Task<TipoDocumento?> ObtenerTipoDocumentoAsync(
             int id, CancellationToken cancellationToken);
+        Task<bool> ExisteCodigoTipoDocumentoAsync(
+            string codigo, CancellationToken cancellationToken);
+        Task<TipoDocumento> CrearTipoDocumentoAsync(
+            TipoDocumento tipoDocumento, CancellationToken cancellationToken);
 
         Task<IReadOnlyList<RequisitoCatalogo>> ListarRequisitosAsync(
             bool? activo, CancellationToken cancellationToken);

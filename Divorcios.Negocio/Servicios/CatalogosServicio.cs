@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Divorcios.Datos.Interfaces;
 using Divorcios.Dominio.Entidades;
 using Divorcios.Negocio.DTOs.Catalogos;
 using Divorcios.Negocio.Interfaces;
+using Divorcios.Negocio.Excepciones;
+using Divorcios.Datos.Excepciones;
 
 namespace Divorcios.Negocio.Servicios
 {
@@ -45,6 +48,46 @@ namespace Divorcios.Negocio.Servicios
         {
             var registro = await repositorio.ObtenerTipoDocumentoAsync(id, cancellationToken);
             return registro is null ? null : Mapear(registro);
+        }
+
+        public async Task<TipoDocumentoDto> CrearTipoDocumentoAsync(
+            CrearTipoDocumentoDto datos, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(datos);
+
+            Validator.ValidateObject(
+                datos,
+                new ValidationContext(datos),
+                validateAllProperties: true);
+
+            var codigo = datos.Codigo.Trim();
+            var existeCodigo = await repositorio.ExisteCodigoTipoDocumentoAsync(codigo, cancellationToken);
+            if (existeCodigo)
+            {
+                throw new ConflictoNegocioException("Ya existe un tipo de documento con ese código.");
+            }
+
+            var tipoDocumento = new TipoDocumento
+            {
+                Codigo = codigo,
+                Nombre = datos.Nombre.Trim(),
+                OrigenCodigo = datos.OrigenCodigo.Trim(),
+                Activo = true
+            };
+
+            try
+            {
+                var guardado = await repositorio.CrearTipoDocumentoAsync(
+                    tipoDocumento, cancellationToken);
+
+                return Mapear(guardado);
+            }
+            catch (CodigoDuplicadoPersistenciaException excepcion)
+            {
+                throw new ConflictoNegocioException(
+                    "Ya existe un tipo de documento con ese código.",
+                    excepcion);
+            }
         }
 
         private static TipoDocumentoDto Mapear(TipoDocumento registro)
