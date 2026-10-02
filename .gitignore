@@ -30,4 +30,14 @@
 # Informes locales de revision de la API.
 /Divorcios.Api/Revision/
 
+# Alternativa local de archivos privados; por defecto se guardan fuera del repositorio.
+/Divorcios.Api/ArchivosPrivados/
+
 # Documentacion local: publicar solamente el README de la raiz.
+*.[mM][dD]
+!/README.md
+
+# Documentos Word locales, en cualquier carpeta del repositorio.
+*.[dD][oO][cC]
+*.[dD][oO][cC][xX]
+*.[dD][oO][cC][mM]

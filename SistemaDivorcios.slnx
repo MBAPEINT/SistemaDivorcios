@@ -3,4 +3,5 @@
   <Project Path="Divorcios.Datos/Divorcios.Datos.csproj" />
   <Project Path="Divorcios.Dominio/Divorcios.Dominio.csproj" />
   <Project Path="Divorcios.Negocio/Divorcios.Negocio.csproj" />
+  <Project Path="Divorcios.Pruebas/Divorcios.Pruebas.csproj" />
 </Solution>

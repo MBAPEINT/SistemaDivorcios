@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Divorcios.Datos.Interfaces;
 using Divorcios.Datos.Repositorios;
 using Microsoft.Extensions.DependencyInjection;
+using Divorcios.Datos.Integraciones;
 
 namespace Divorcios.Datos.Extensiones
 {
@@ -19,6 +20,21 @@ namespace Divorcios.Datos.Extensiones
             });
 
             servicios.AddScoped<ICatalogosRepositorio, CatalogosRepositorio>();
+            servicios.AddScoped<IIdentidadRepositorio, IdentidadRepositorio>();
+            servicios.AddScoped<IAccesoCiudadanoRepositorio, AccesoCiudadanoRepositorio>();
+            servicios.AddScoped<IPreregistrosRepositorio, PreregistrosRepositorio>();
+            servicios.AddScoped<IVersionesPreregistroRepositorio, VersionesPreregistroRepositorio>();
+            servicios.AddScoped<IArchivosPreregistroRepositorio, ArchivosPreregistroRepositorio>();
+            servicios.AddScoped<IGeneracionRequisitosRepositorio, GeneracionRequisitosRepositorio>();
+            servicios.AddScoped<IAlmacenamientoArchivos, Divorcios.Datos.Almacenamiento.AlmacenamientoArchivosLocal>();
+            servicios.AddHttpClient<IReniecProveedor, ReniecProveedor>(cliente =>
+            {
+                cliente.Timeout = Timeout.InfiniteTimeSpan;
+            }).RemoveAllLoggers().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                // No reenviar credenciales siguiendo redirecciones del proveedor.
+                AllowAutoRedirect = false
+            });
 
             return servicios;
         }
